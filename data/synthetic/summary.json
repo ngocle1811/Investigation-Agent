@@ -1,0 +1,12 @@
+{
+  "seed": 42,
+  "variants": 3,
+  "scenario_count": 12,
+  "case_count": 36,
+  "suspicious_case_count": 24,
+  "benign_case_count": 12,
+  "total_events": 1943,
+  "average_events_per_case": 53.97,
+  "min_events_per_case": 25,
+  "max_events_per_case": 86
+}

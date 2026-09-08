@@ -1,0 +1,207 @@
+templates:
+  - scenario_id: S01
+    category: suspicious
+    name: Multiple Failed Logons
+    description: Multiple failed logons target the same user and host from one source in a short window.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: external
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [failed_logon]
+      expected_behaviors: [multiple_failed_logons]
+      expected_rule_ids: [R001]
+      expected_mitre: [T1110.001]
+      expected_next_action_categories: [authentication_review, ip_reputation_check, user_verification]
+
+  - scenario_id: S02
+    category: suspicious
+    name: Failed Logons Followed By Successful Login
+    description: Repeated failures are followed by a successful login for the same user, host, and source IP.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: external
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [failed_logon, successful_logon]
+      expected_behaviors: [multiple_failed_logons, failed_logons_followed_by_success]
+      expected_rule_ids: [R001, R002]
+      expected_mitre: [T1110.001]
+      expected_next_action_categories: [authentication_review, ip_reputation_check, user_verification]
+
+  - scenario_id: S03
+    category: suspicious
+    name: PowerShell Process Execution
+    description: A PowerShell process appears among surrounding process telemetry and requires context review.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: internal
+      process: powershell
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [parent_process, powershell_process, console_process]
+      expected_behaviors: [powershell_process_execution]
+      expected_rule_ids: [R003]
+      expected_mitre: [T1059.001]
+      expected_next_action_categories: [process_tree_review, user_verification]
+
+  - scenario_id: S04
+    category: suspicious
+    name: Office Process Spawns PowerShell
+    description: An Office document process creates PowerShell and a console child without a real exploit payload.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: internal
+      process: office
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [office_process, powershell_process, console_process]
+      expected_behaviors: [office_spawns_powershell]
+      expected_rule_ids: [R003, R004]
+      expected_mitre: [T1059.001]
+      expected_next_action_categories: [process_tree_review, user_verification]
+
+  - scenario_id: S05
+    category: suspicious
+    name: PowerShell Followed By Network Connection
+    description: PowerShell creation is followed by a synthetic DNS query, network connection, and file event.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: internal
+      domain: synthetic_external
+      process: powershell
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [powershell_process, dns_query, network_connection, file_create]
+      expected_behaviors: [powershell_followed_by_network]
+      expected_rule_ids: [R003, R005]
+      expected_mitre: [T1059.001]
+      expected_next_action_categories: [process_tree_review, network_destination_review, user_verification]
+
+  - scenario_id: S06
+    category: suspicious
+    name: Suspicious External Login Followed By Process Activity
+    description: A successful external authentication is followed by new process and network activity on the host.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: external
+      domain: synthetic_external
+      process: command_shell
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [external_login, process_activity, network_connection]
+      expected_behaviors: [external_login_followed_by_process_activity]
+      expected_rule_ids: [R005]
+      expected_mitre: []
+      expected_next_action_categories: [authentication_review, process_tree_review, ip_reputation_check]
+
+  - scenario_id: S07
+    category: suspicious
+    name: Scheduled Task Persistence Pattern
+    description: A synthetic scheduled task is created and later executes a safe marker process.
+    entities:
+      host: workstation
+      user: admin_user
+      src_ip: internal
+      process: scheduled_task
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [scheduled_task_creation, scheduled_task_execution, task_process]
+      expected_behaviors: [scheduled_task_creation_and_execution]
+      expected_rule_ids: [R007]
+      expected_mitre: [T1053.005]
+      expected_next_action_categories: [persistence_review, process_tree_review, user_verification]
+
+  - scenario_id: S08
+    category: suspicious
+    name: Suspicious DNS And External Destination
+    description: A process performs a query for a reserved example domain and connects to its test destination.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: internal
+      domain: synthetic_external
+      process: script_host
+    ground_truth:
+      suspicious: true
+      expected_event_roles: [originating_process, dns_query, network_connection]
+      expected_behaviors: [process_dns_external_connection]
+      expected_rule_ids: [R005]
+      expected_mitre: []
+      expected_next_action_categories: [network_destination_review, process_tree_review]
+
+  - scenario_id: B01
+    category: benign
+    name: Normal Successful Login
+    description: A normal user signs in successfully during expected activity with no suspicious follow-on sequence.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: internal
+    ground_truth:
+      suspicious: false
+      expected_event_roles: [successful_logon]
+      expected_behaviors: [normal_successful_login]
+      expected_rule_ids: []
+      expected_mitre: []
+      expected_next_action_categories: [no_immediate_action]
+
+  - scenario_id: B02
+    category: benign
+    name: Legitimate Admin PowerShell
+    description: An administrator uses PowerShell for a labeled maintenance action and approved management traffic.
+    entities:
+      host: workstation
+      user: admin_user
+      src_ip: internal
+      domain: management
+      process: powershell
+    ground_truth:
+      suspicious: false
+      expected_event_roles: [admin_powershell, management_dns, management_network, maintenance_file]
+      expected_behaviors: [legitimate_admin_powershell]
+      expected_rule_ids: []
+      expected_mitre: []
+      expected_next_action_categories: [change_context_verification]
+
+  - scenario_id: B03
+    category: benign
+    name: Browser Network Activity
+    description: A browser process resolves and connects to a reserved example web destination.
+    entities:
+      host: workstation
+      user: standard_user
+      src_ip: internal
+      domain: browser
+      process: browser
+    ground_truth:
+      suspicious: false
+      expected_event_roles: [browser_process, browser_dns, browser_network]
+      expected_behaviors: [normal_browser_network_activity]
+      expected_rule_ids: []
+      expected_mitre: []
+      expected_next_action_categories: [no_immediate_action]
+
+  - scenario_id: B04
+    category: benign
+    name: Software Update Process
+    description: An approved updater resolves its service, connects, and writes a synthetic update file.
+    entities:
+      host: workstation
+      user: service_account
+      src_ip: internal
+      domain: update
+      process: updater
+    ground_truth:
+      suspicious: false
+      expected_event_roles: [update_process, update_dns, update_network, update_file]
+      expected_behaviors: [approved_software_update]
+      expected_rule_ids: []
+      expected_mitre: []
+      expected_next_action_categories: [change_context_verification]

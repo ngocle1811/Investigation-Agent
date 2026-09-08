@@ -8,7 +8,7 @@ Existing learning material in `docs/` is preserved as supporting context.
 
 ## Current status
 
-Checkpoints 0, 1, and 2 are complete. See [PROGRESS.md](PROGRESS.md) for verified status.
+Checkpoints 0, 1, 2, and 3 are complete. See [PROGRESS.md](PROGRESS.md) for verified status.
 No evaluation metrics are reported until the reproducible evaluation scripts have run.
 
 ## Architecture boundary
@@ -53,14 +53,35 @@ Services:
 
 Use `.env` to override local defaults. Do not commit credentials.
 
+## Generate the synthetic incident dataset
+
+Checkpoint 3 defines 8 suspicious scenarios (`S01`-`S08`) and 4 benign controls
+(`B01`-`B04`) in `config/synthetic_scenarios.yaml`. Each template has static, human-authored
+ground truth; generation does not call an LLM. The default command creates three deterministic
+variants per template:
+
+```bash
+python scripts/generate_synthetic_data.py --seed 42 --variants 3
+```
+
+The checked-in benchmark at `data/synthetic/incidents.jsonl` contains 36 cases and 1,943 events.
+Every case contains 20-80 interleaved benign noise events and 3-10 story-relevant events. Stable
+IDs use the form `INC-S02-V01-E0001`; timestamps are timezone-aware and stored in canonical
+causal order. `metadata.input_event_ids` and `metadata.missing_event_ids` separately model
+out-of-order or missing ingestion without corrupting that canonical timeline. Variant 3 also
+covers duplicate telemetry, multiple users on one host, and simultaneous processes.
+
+Use `--output` to change the JSONL destination. `summary.json` is written beside it unless
+`--summary-output` is provided. Re-running with identical inputs is byte-for-byte idempotent.
+
 ## Prepare and index the security knowledge corpus
 
 The curated list in `config/sources.yaml` covers Microsoft Windows Security event pages, the
 official Sysmon reference, a small scenario-relevant Sigma subset, and a pinned Enterprise
 ATT&CK STIX release. Remote bytes and provenance sidecars are cached under `data/raw/`; normalized
 logical documents and deterministic chunks are written under `data/processed/knowledge/`.
-Generated data and local embedding models are intentionally gitignored and can be reproduced
-from the source config.
+Raw/processed knowledge artifacts and local embedding models are intentionally gitignored and
+can be reproduced from the source config. The synthetic Checkpoint 3 benchmark is checked in.
 
 Run the full pipeline (download/cache, normalize, source-aware chunk, embed, and Qdrant sync):
 

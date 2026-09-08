@@ -39,7 +39,26 @@
 - [x] Pass 21 tests (including in-memory Qdrant integration tests), Ruff checks, and the
   containerized four-query smoke test.
 
-## Checkpoints 3-11
+## Checkpoint 3 - Security Event Schema and Synthetic Dataset
+
+- [x] Add a strict normalized `SecurityEvent` schema for Windows Security, Sysmon, network,
+  and DNS telemetry with nullable source-specific fields.
+- [x] Add 8 suspicious scenarios (`S01`-`S08`) and 4 benign controls (`B01`-`B04`) with
+  static semantic-role ground truth in YAML.
+- [x] Validate every template MITRE mapping against the current configured technique subset.
+- [x] Generate three deterministic variants per template with stable case/event IDs and
+  timezone-aware causal timelines.
+- [x] Interleave 20-80 benign noise events with 3-10 relevant events per case.
+- [x] Model duplicate, missing, out-of-order, multiple-user, and simultaneous-process input
+  edge cases while preserving a canonical timeline.
+- [x] Restrict generated domains and IP addresses to example domains, private networks, and
+  RFC documentation ranges; use only inert synthetic command markers.
+- [x] Generate 36 cases (24 suspicious, 12 benign), 1,943 total events, and a deterministic
+  summary using seed 42.
+- [x] Verify byte-for-byte idempotency on a second generation run.
+- [x] Pass 32 total tests, including 11 Checkpoint 3 tests, and `ruff check .`.
+
+## Checkpoints 4-11
 
 - [ ] Not started.
 
@@ -57,9 +76,15 @@ None. Paid model/API credentials are not required for the completed checkpoints.
 - Embedding dimension is discovered from the configured provider and validated against Qdrant.
 - The host API defaults to port `18000`; the container listens on port `8000`.
 - Raw/processed knowledge and model caches are reproducible and gitignored.
+- Synthetic template truth is configuration-owned and does not depend on an LLM or future
+  detection implementation.
+- Synthetic cases preserve canonical event order; simulated ingest order and missing-event IDs
+  are separate metadata so edge-case tests remain reproducible.
+- Synthetic external indicators use only reserved example domains and documentation IP ranges.
 - ATT&CK data is pinned to Enterprise ATT&CK STIX `19.1`; normalized Sigma documents retain
   modified dates and content hashes from upstream source data.
 
 ## Next action
 
-Begin Checkpoint 3 only when explicitly requested: event schema and synthetic dataset generation.
+Checkpoint 3 is complete. Begin Checkpoint 4 only when explicitly requested: deterministic
+detection rules and correlation.
