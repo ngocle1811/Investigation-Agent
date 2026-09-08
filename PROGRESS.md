@@ -58,7 +58,43 @@
 - [x] Verify byte-for-byte idempotency on a second generation run.
 - [x] Pass 32 total tests, including 11 Checkpoint 3 tests, and `ruff check .`.
 
-## Checkpoints 4-11
+## Checkpoint 4 - Deterministic Detection, Correlation, and Case Building
+
+- [x] Add strict `DetectionRule`, `RuleMatch`, `CandidateBehavior`, and `InvestigationCase`
+  schemas with deterministic IDs and validated event references.
+- [x] Configure severity weights, escalation thresholds, rule parameters, process sets, trusted
+  contexts, windows, and network boundaries in `config/correlation_rules.yaml`.
+- [x] Implement R001-R010: authentication thresholds/sequences, PowerShell, parent-child,
+  process/network, external-login/process, scheduled-task, DNS/network, and exact safe markers.
+- [x] Add reusable sorting, grouping, time-window, followed-by, parent-child, same-process, and
+  stable-fingerprint deduplication primitives.
+- [x] Canonicalize out-of-order input while retaining event IDs and prevent synthetic duplicates
+  from affecting thresholds or generating duplicate rule matches.
+- [x] Verify missing chain events do not trigger complete correlations and that users/processes
+  sharing a host or timestamp remain isolated by their correlation keys.
+- [x] Aggregate overlapping matches into deterministic candidate behaviors without duplicating
+  supporting event evidence.
+- [x] Build one bounded investigation case per synthetic record; runtime building has no ground
+  truth dependency and evaluation truth is optional.
+- [x] Add deterministic severity scoring where an isolated R003 PowerShell match is score 2/low
+  and cannot meet the score-7 escalation threshold.
+- [x] Add `scripts/run_detection.py` and export 36 cases plus an expected-versus-actual report.
+- [x] Produce 57 rule matches and 27 candidate behaviors; detect 24/24 suspicious cases, miss
+  0/24, escalate 0/12 benign cases, and hit 57/57 expected rules with no unexpected hits.
+- [x] Verify a second detection run is byte-for-byte idempotent.
+- [x] Pass 52 total tests, including 20 Checkpoint 4 tests, and `ruff check .`.
+
+### Checkpoint 3 corrections discovered during Checkpoint 4
+
+- Noise process/login identities previously reused the story user and could manufacture R002 or
+  R007 correlation. Noise now uses isolated background identities; seed, case/event counts, and
+  stable ID format are unchanged, and the dataset was regenerated.
+- Rule expectations were aligned with the final non-overlapping rule semantics: R006/R009/R010
+  were added where their full chains or exact markers exist, scheduled-task detection moved from
+  the old R007 placeholder to R008, and B02 now explicitly expects its permitted low-level R003
+  match. These are semantic corrections, not metric-driven label changes.
+
+## Checkpoints 5-11
 
 - [ ] Not started.
 
@@ -81,10 +117,18 @@ None. Paid model/API credentials are not required for the completed checkpoints.
 - Synthetic cases preserve canonical event order; simulated ingest order and missing-event IDs
   are separate metadata so edge-case tests remain reproducible.
 - Synthetic external indicators use only reserved example domains and documentation IP ranges.
+- Detection and correlation are deterministic and preserve original event references; no LLM
+  decides which event, rule, or sequence matches.
+- Rule thresholds and severity weights live in configuration instead of being scattered through
+  Python code.
+- Runtime case building is ground-truth independent. Expected-versus-actual comparison is a
+  separate evaluation path, and exported cases omit ground truth by default.
+- Low-level signals are not synonymous with escalation: B02 may match R003 while remaining a
+  non-escalated benign case.
 - ATT&CK data is pinned to Enterprise ATT&CK STIX `19.1`; normalized Sigma documents retain
   modified dates and content hashes from upstream source data.
 
 ## Next action
 
-Checkpoint 3 is complete. Begin Checkpoint 4 only when explicitly requested: deterministic
-detection rules and correlation.
+Checkpoint 4 is complete. Begin Checkpoint 5 only when explicitly requested: RAG query
+construction and retrieval baseline work.

@@ -1,4 +1,148 @@
-defaults:
-  failed_logon_threshold: 5
-  failed_then_success_window_seconds: 300
-  process_network_window_seconds: 120
+severity_weights:
+  informational: 1
+  low: 2
+  medium: 4
+  high: 7
+
+case_scoring:
+  escalation_threshold: 7
+  label_thresholds:
+    informational: 1
+    low: 2
+    medium: 4
+    high: 7
+
+rules:
+  R001:
+    rule_id: R001
+    name: Multiple Failed Logons
+    description: Detect repeated failed authentication for one user, source IP, and host.
+    severity: medium
+    enabled: true
+    rule_type: threshold
+    parameters:
+      failed_login_threshold: 5
+      window_seconds: 300
+    mitre_techniques: [T1110.001]
+
+  R002:
+    rule_id: R002
+    name: Failed Logons Followed By Success
+    description: Detect repeated failed authentication followed by success for one identity tuple.
+    severity: high
+    enabled: true
+    rule_type: sequence
+    parameters:
+      required_failed_logins: 5
+      success_window_seconds: 300
+    mitre_techniques: [T1110.001]
+
+  R003:
+    rule_id: R003
+    name: PowerShell Execution
+    description: Record PowerShell process creation as a low-level signal without malicious attribution.
+    severity: low
+    enabled: true
+    rule_type: event
+    parameters:
+      process_names: [powershell.exe, powershell, pwsh.exe, pwsh]
+    mitre_techniques: [T1059.001]
+
+  R004:
+    rule_id: R004
+    name: Office Process Spawns Script Interpreter
+    description: Detect a validated Office parent and script-interpreter child process relation.
+    severity: high
+    enabled: true
+    rule_type: parent_child
+    parameters:
+      parent_process_names: [winword.exe, excel.exe, powerpnt.exe]
+      child_process_names: [powershell.exe, cmd.exe, wscript.exe, cscript.exe]
+      window_seconds: 120
+    mitre_techniques: [T1059.001]
+
+  R005:
+    rule_id: R005
+    name: Process Followed By External Network Connection
+    description: Detect a process followed by an external connection using the same host and process ID.
+    severity: medium
+    enabled: true
+    rule_type: sequence
+    parameters:
+      window_seconds: 120
+      internal_cidrs: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+      trusted_process_names: [browser.exe, updater.exe]
+      trusted_parent_process_names: [management-agent.exe]
+      trusted_command_markers: ["<approved-maintenance>"]
+      trusted_domain_prefixes: [portal-, updates-, management-]
+    mitre_techniques: []
+
+  R006:
+    rule_id: R006
+    name: PowerShell Followed By Network Connection
+    description: Detect PowerShell followed by a connection from the same process and host.
+    severity: high
+    enabled: true
+    rule_type: sequence
+    parameters:
+      window_seconds: 120
+      process_names: [powershell.exe, powershell, pwsh.exe, pwsh]
+      trusted_parent_process_names: [management-agent.exe]
+      trusted_command_markers: ["<approved-maintenance>"]
+      trusted_domain_prefixes: [management-]
+    mitre_techniques: [T1059.001]
+
+  R007:
+    rule_id: R007
+    name: External Login Followed By Process Activity
+    description: Detect external successful authentication followed by same-user process activity.
+    severity: high
+    enabled: true
+    rule_type: sequence
+    parameters:
+      window_seconds: 180
+      internal_cidrs: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+    mitre_techniques: []
+
+  R008:
+    rule_id: R008
+    name: Scheduled Task Persistence Pattern
+    description: Detect scheduled-task creation followed by execution for the same host and task.
+    severity: high
+    enabled: true
+    rule_type: sequence
+    parameters:
+      window_seconds: 900
+      task_name_field: task_name
+    mitre_techniques: [T1053.005]
+
+  R009:
+    rule_id: R009
+    name: DNS Query Followed By Network Connection
+    description: Detect process, DNS, and external network activity sharing host and process ID.
+    severity: high
+    enabled: true
+    rule_type: sequence
+    parameters:
+      window_seconds: 120
+      internal_cidrs: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+      trusted_process_names: [browser.exe, updater.exe]
+      trusted_parent_process_names: [management-agent.exe]
+      trusted_command_markers: ["<approved-maintenance>"]
+      trusted_domain_prefixes: [portal-, updates-, management-]
+    mitre_techniques: []
+
+  R010:
+    rule_id: R010
+    name: Suspicious Synthetic Command Marker
+    description: Detect only exact safe suspicious markers emitted by the controlled generator.
+    severity: medium
+    enabled: true
+    rule_type: event
+    parameters:
+      process_names: [powershell.exe, powershell, pwsh.exe, pwsh]
+      exact_markers:
+        - "<synthetic-action>"
+        - "<synthetic-office-action>"
+        - "<synthetic-network-action>"
+    mitre_techniques: [T1059.001]

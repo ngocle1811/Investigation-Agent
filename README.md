@@ -8,8 +8,8 @@ Existing learning material in `docs/` is preserved as supporting context.
 
 ## Current status
 
-Checkpoints 0, 1, 2, and 3 are complete. See [PROGRESS.md](PROGRESS.md) for verified status.
-No evaluation metrics are reported until the reproducible evaluation scripts have run.
+Checkpoints 0 through 4 are complete. See [PROGRESS.md](PROGRESS.md) for verified status.
+The deterministic detection baseline is reported separately from later RAG/LLM evaluation.
 
 ## Architecture boundary
 
@@ -73,6 +73,34 @@ covers duplicate telemetry, multiple users on one host, and simultaneous process
 
 Use `--output` to change the JSONL destination. `summary.json` is written beside it unless
 `--summary-output` is provided. Re-running with identical inputs is byte-for-byte idempotent.
+
+## Run deterministic detection and correlation
+
+Checkpoint 4 runs normalized events through ten configuration-owned rules, reusable correlation
+primitives, candidate-behavior aggregation, and the investigation case builder. It does not call
+an LLM and runtime case construction does not read synthetic ground truth.
+
+```bash
+python scripts/run_detection.py
+```
+
+Defaults:
+
+- Input: `data/synthetic/incidents.jsonl`
+- Rule configuration: `config/correlation_rules.yaml`
+- Cases: `data/processed/incidents/cases.jsonl`
+- Expected-versus-actual report: `data/processed/incidents/detection_summary.json`
+
+The current seed-42 baseline processes all 36 cases into 57 rule matches and 27 candidate
+behaviors. It detects 24/24 suspicious cases, misses 0/24, escalates 0/12 benign controls, and
+hits all 57 configured rule expectations. B02 intentionally matches only the low-severity R003
+PowerShell signal (score 2) and is not escalated. An identical second run does not rewrite either
+output artifact.
+
+Severity weights and the escalation threshold are configurable. The default weights are 1/2/4/7
+for informational/low/medium/high, with case escalation at score 7. Ground truth is used only by
+the separate comparison step; pass `--include-ground-truth` only when an exported case needs
+evaluation context.
 
 ## Prepare and index the security knowledge corpus
 

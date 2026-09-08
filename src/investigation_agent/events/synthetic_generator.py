@@ -632,9 +632,11 @@ def _noise_events(
             choice = "login"
         else:
             choice = rng.choice(("process", "login", "dns", "network", "file"))
-        background_user = entities.user if index % 5 else f"background{rng.randint(1, 20):02d}"
+        # Noise identities are intentionally isolated from the story identity. Reusing the
+        # principal user here can accidentally manufacture auth-to-process correlations.
+        background_user = f"background{index:03d}"
+        noise_entities = entities.model_copy(update={"user": background_user})
         if choice == "process":
-            noise_entities = entities.model_copy(update={"user": background_user})
             event = _process(
                 offset,
                 role,
@@ -646,7 +648,6 @@ def _noise_events(
                 relevant=False,
             )
         elif choice == "login":
-            noise_entities = entities.model_copy(update={"user": background_user})
             event = _auth(
                 offset,
                 role,
@@ -659,7 +660,7 @@ def _noise_events(
             event = _dns(
                 offset,
                 role,
-                entities,
+                noise_entities,
                 process_name="browser.exe",
                 process_id=_process_id(rng),
                 domain=f"background-{rng.randint(1, 30)}.example.com",
@@ -669,7 +670,7 @@ def _noise_events(
             event = _network(
                 offset,
                 role,
-                entities,
+                noise_entities,
                 process_name="browser.exe",
                 process_id=_process_id(rng),
                 relevant=False,
@@ -678,7 +679,7 @@ def _noise_events(
             event = _file(
                 offset,
                 role,
-                entities,
+                noise_entities,
                 process_name="updater.exe",
                 process_id=_process_id(rng),
                 marker=f"noise-{index:03d}",

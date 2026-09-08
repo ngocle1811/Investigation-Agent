@@ -44,7 +44,7 @@ templates:
       suspicious: true
       expected_event_roles: [parent_process, powershell_process, console_process]
       expected_behaviors: [powershell_process_execution]
-      expected_rule_ids: [R003]
+      expected_rule_ids: [R003, R010]
       expected_mitre: [T1059.001]
       expected_next_action_categories: [process_tree_review, user_verification]
 
@@ -61,7 +61,7 @@ templates:
       suspicious: true
       expected_event_roles: [office_process, powershell_process, console_process]
       expected_behaviors: [office_spawns_powershell]
-      expected_rule_ids: [R003, R004]
+      expected_rule_ids: [R003, R004, R010]
       expected_mitre: [T1059.001]
       expected_next_action_categories: [process_tree_review, user_verification]
 
@@ -79,7 +79,7 @@ templates:
       suspicious: true
       expected_event_roles: [powershell_process, dns_query, network_connection, file_create]
       expected_behaviors: [powershell_followed_by_network]
-      expected_rule_ids: [R003, R005]
+      expected_rule_ids: [R003, R005, R006, R009, R010]
       expected_mitre: [T1059.001]
       expected_next_action_categories: [process_tree_review, network_destination_review, user_verification]
 
@@ -97,7 +97,7 @@ templates:
       suspicious: true
       expected_event_roles: [external_login, process_activity, network_connection]
       expected_behaviors: [external_login_followed_by_process_activity]
-      expected_rule_ids: [R005]
+      expected_rule_ids: [R005, R007]
       expected_mitre: []
       expected_next_action_categories: [authentication_review, process_tree_review, ip_reputation_check]
 
@@ -114,7 +114,7 @@ templates:
       suspicious: true
       expected_event_roles: [scheduled_task_creation, scheduled_task_execution, task_process]
       expected_behaviors: [scheduled_task_creation_and_execution]
-      expected_rule_ids: [R007]
+      expected_rule_ids: [R008]
       expected_mitre: [T1053.005]
       expected_next_action_categories: [persistence_review, process_tree_review, user_verification]
 
@@ -132,7 +132,7 @@ templates:
       suspicious: true
       expected_event_roles: [originating_process, dns_query, network_connection]
       expected_behaviors: [process_dns_external_connection]
-      expected_rule_ids: [R005]
+      expected_rule_ids: [R005, R009]
       expected_mitre: []
       expected_next_action_categories: [network_destination_review, process_tree_review]
 
@@ -166,7 +166,7 @@ templates:
       suspicious: false
       expected_event_roles: [admin_powershell, management_dns, management_network, maintenance_file]
       expected_behaviors: [legitimate_admin_powershell]
-      expected_rule_ids: []
+      expected_rule_ids: [R003]
       expected_mitre: []
       expected_next_action_categories: [change_context_verification]
 

@@ -166,7 +166,8 @@ def test_noise_is_interleaved_and_benign_controls_are_unlabeled(generated) -> No
 
     for case in (case for case in cases if case.scenario_id.startswith("B")):
         assert case.ground_truth.suspicious is False
-        assert case.ground_truth.expected_rule_ids == []
+        expected_rules = ["R003"] if case.scenario_id == "B02" else []
+        assert case.ground_truth.expected_rule_ids == expected_rules
         assert case.ground_truth.expected_mitre == []
         assert all("suspicious_sequence" not in event.ground_truth_labels for event in case.events)
 
