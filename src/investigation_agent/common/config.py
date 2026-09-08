@@ -35,8 +35,9 @@ class Settings(BaseSettings):
     qdrant_api_key: SecretStr | None = None
     qdrant_collection: str = "security_knowledge"
 
-    embedding_provider: str = "local"
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_provider: str = "fastembed"
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    embedding_batch_size: int = 32
     llm_provider: str = "mock"
     llm_model: str = "mock-investigator-v1"
     judge_model: str = "mock-judge-v1"
@@ -61,6 +62,12 @@ class Settings(BaseSettings):
         """Return the configured Qdrant HTTP endpoint."""
 
         return self.qdrant_url or f"http://{self.qdrant_host}:{self.qdrant_port}"
+
+    @property
+    def embedding_cache_dir(self) -> Path:
+        """Return the project-local cache for downloaded embedding model files."""
+
+        return self.project_root.resolve() / "data" / "models" / "fastembed"
 
 
 @lru_cache

@@ -29,7 +29,9 @@ services:
       retries: 10
 
   backend:
-    build: .
+    build:
+      context: .
+      target: backend
     environment:
       APP_ENV: docker
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -40,8 +42,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-investigation-local}
       QDRANT_HOST: qdrant
       QDRANT_PORT: 6333
+      PROJECT_ROOT: /app
     ports:
       - "${API_PORT:-18000}:8000"
+    volumes:
+      - ./data/models:/app/data/models
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,7 +59,9 @@ services:
       retries: 10
 
   streamlit:
-    build: .
+    build:
+      context: .
+      target: streamlit
     command: ["streamlit", "run", "ui/app.py", "--server.address=0.0.0.0", "--server.port=8501"]
     environment:
       BACKEND_URL: http://backend:8000

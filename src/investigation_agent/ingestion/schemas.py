@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
 
 class SourceEntry(BaseModel):
@@ -77,6 +77,37 @@ class KnowledgeDocument(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class KnowledgeChunk(BaseModel):
+    """Source-aware retrieval unit with original and contextualized content."""
+
+    chunk_id: str
+    document_id: str
+    parent_id: str | None = None
+    source: str
+    source_type: str
+    title: str
+    section: str
+    content: str = Field(min_length=1)
+    contextualized_content: str = Field(min_length=1)
+    url: str
+    version: str
+    effective_or_modified_date: str | None = None
+    event_id: int | None = None
+    sigma_rule_id: str | None = None
+    technique_id: str | None = None
+    tactic: str | None = None
+    content_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    retrieval_enabled: bool = True
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @computed_field
+    @property
+    def hash(self) -> str:
+        """Expose the canonical content hash under the compact payload field name."""
+
+        return self.content_hash
+
+
 class IngestionSummary(BaseModel):
     """Deterministic preparation result suitable for CLI and logging."""
 
@@ -87,3 +118,26 @@ class IngestionSummary(BaseModel):
     updated: int
     unchanged: int
     output_changed: bool
+
+
+class ChunkingSummary(BaseModel):
+    """Stable summary for source-aware chunk preparation."""
+
+    input_documents: int
+    chunks: int
+    parent_chunks: int
+    retrievable_chunks: int
+    by_source_type: dict[str, int]
+    output_path: str
+    output_changed: bool
+
+
+class IndexingSummary(BaseModel):
+    """Result of synchronizing chunks into one Qdrant collection."""
+
+    collection: str
+    documents: int
+    chunks: int
+    points: int
+    deleted_stale_documents: int
+    vector_size: int

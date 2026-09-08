@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from investigation_agent import __version__
 from investigation_agent.api.routes.health import router as health_router
+from investigation_agent.api.routes.knowledge import router as knowledge_router
 from investigation_agent.common.config import get_settings
 from investigation_agent.common.logging import configure_logging
 
@@ -19,6 +20,7 @@ app = FastAPI(
     version=__version__,
 )
 app.include_router(health_router)
+app.include_router(knowledge_router)
 
 
 @app.get("/", tags=["meta"])

@@ -56,6 +56,10 @@ def test_microsoft_event_normalization_preserves_provenance() -> None:
     assert "account logon attempt fails" in document.content
     assert "Navigation" not in document.content
     assert document.effective_or_modified_date == "2025-09-09"
+    assert [section["heading"] for section in document.metadata["sections"]] == [
+        "Event Description",
+        "Security Monitoring Recommendations",
+    ]
 
 
 def test_sysmon_normalization_is_a_separate_source_type() -> None:
@@ -65,6 +69,10 @@ def test_sysmon_normalization_is_a_separate_source_type() -> None:
     assert document.source_type == "sysmon_doc"
     assert document.metadata["product"] == "sysmon"
     assert "Event ID 3" in document.content
+    assert [section["heading"] for section in document.metadata["sections"]] == [
+        "Event ID 1: Process creation",
+        "Event ID 3: Network connection",
+    ]
 
 
 def test_sigma_rule_remains_one_logical_document() -> None:

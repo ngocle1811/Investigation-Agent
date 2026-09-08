@@ -8,7 +8,7 @@ Existing learning material in `docs/` is preserved as supporting context.
 
 ## Current status
 
-Checkpoints 0 and 1 are complete. See [PROGRESS.md](PROGRESS.md) for verified status.
+Checkpoints 0, 1, and 2 are complete. See [PROGRESS.md](PROGRESS.md) for verified status.
 No evaluation metrics are reported until the reproducible evaluation scripts have run.
 
 ## Architecture boundary
@@ -53,26 +53,66 @@ Services:
 
 Use `.env` to override local defaults. Do not commit credentials.
 
-## Prepare the security knowledge corpus
+## Prepare and index the security knowledge corpus
 
 The curated list in `config/sources.yaml` covers Microsoft Windows Security event pages, the
 official Sysmon reference, a small scenario-relevant Sigma subset, and a pinned Enterprise
 ATT&CK STIX release. Remote bytes and provenance sidecars are cached under `data/raw/`; normalized
-logical documents are written under `data/processed/knowledge/`. Generated data is intentionally
-gitignored and can be reproduced from the source config.
+logical documents and deterministic chunks are written under `data/processed/knowledge/`.
+Generated data and local embedding models are intentionally gitignored and can be reproduced
+from the source config.
+
+Run the full pipeline (download/cache, normalize, source-aware chunk, embed, and Qdrant sync):
+
+```bash
+python scripts/ingest_knowledge.py
+```
+
+The default embedding provider is the local, CPU-friendly FastEmbed model
+`BAAI/bge-small-en-v1.5`; it requires no paid API key. The first run downloads the model to
+`data/models/fastembed/`. Provider, model, and batch size can be overridden with the
+`EMBEDDING_PROVIDER`, `EMBEDDING_MODEL`, and `EMBEDDING_BATCH_SIZE` environment variables.
+
+To stop after Checkpoint 1 normalization:
 
 ```bash
 python scripts/ingest_knowledge.py --prepare-only
 ```
 
-After the first run, preparation can be reproduced without network access:
+After the source and model caches exist, the full pipeline can be reproduced without fetching
+the curated sources again:
 
 ```bash
-python scripts/ingest_knowledge.py --prepare-only --offline
+python scripts/ingest_knowledge.py --offline
 ```
 
 Use `--refresh` to re-fetch every curated source. Unchanged source bytes retain their original
-download timestamp and content hash; normalized JSONL is only replaced when its bytes change.
+download timestamp and content hash; normalized document/chunk JSONL files are only replaced when
+their bytes change. Qdrant uses deterministic point IDs, replaces each current document's points,
+and removes documents no longer present in the corpus.
 
-Checkpoint 2 will add source-specific chunks, embeddings, and Qdrant indexing. Calling the script
-without `--prepare-only` currently exits explicitly instead of pretending indexing occurred.
+Chunking boundaries are source-aware:
+
+- Microsoft Windows event pages: one stored parent plus retrievable logical-section children.
+- Sysmon: one stored parent plus retrievable chunks grouped by Event ID/logical section.
+- Sigma: exactly one retrievable chunk per complete rule.
+- MITRE ATT&CK: exactly one retrievable chunk per technique or sub-technique, with tactic and
+  parent-technique metadata.
+
+Only `contextualized_content` is embedded. The original `content` remains in each Qdrant payload
+for evidence display and citation. Search excludes parent-only chunks by default and accepts exact
+filters for `document_id`, `source`, `source_type`, `event_id`, `sigma_rule_id`, `technique_id`,
+and `tactic`:
+
+```powershell
+Invoke-RestMethod "http://localhost:18000/knowledge/search?q=failed%20logon&event_id=4625"
+```
+
+With the Docker API running, verify all four top-result acceptance queries:
+
+```bash
+python scripts/smoke_test_knowledge.py
+```
+
+The verified corpus currently contains 18 documents, 102 stored Qdrant points, and 97 retrievable
+chunks. See `config/rag.yaml` and `.env.example` for the checked-in defaults.

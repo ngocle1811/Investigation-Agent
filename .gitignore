@@ -17,5 +17,8 @@ data/raw/**/*
 data/processed/**/*
 !data/processed/**/
 !data/processed/**/.gitkeep
+data/models/**/*
+!data/models/**/
+!data/models/**/.gitkeep
 artifacts/eval/*
 !artifacts/eval/.gitkeep

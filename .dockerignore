@@ -6,4 +6,6 @@ __pycache__
 artifacts
 data/raw
 data/processed
+data/models
+.docker-wheelhouse
 docs/archify
