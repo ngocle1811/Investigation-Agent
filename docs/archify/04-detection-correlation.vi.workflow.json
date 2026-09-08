@@ -1,0 +1,380 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Workflow phát hiện & tương quan — LÕI XÁC ĐỊNH ĐỀ XUẤT",
+    "output": "04-detection-correlation.vi.workflow.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "detection_path",
+        "label": "Kiểm tra và phát hiện",
+        "focus": [
+          "receive",
+          "validate",
+          "normalize",
+          "rules",
+          "suspicious"
+        ],
+        "note": "Validation và quy tắc rõ ràng quyết định một event có đáng ngờ hay không."
+      },
+      {
+        "id": "correlation_path",
+        "label": "Tương quan và hành động",
+        "focus": [
+          "suspicious",
+          "find_score",
+          "existing",
+          "update_path",
+          "create_path"
+        ],
+        "note": "Bằng chứng thời gian/thực thể/process/IOC quyết định tạo hay cập nhật incident."
+      },
+      {
+        "id": "no_alert_path",
+        "label": "Nhánh benign",
+        "focus": [
+          "suspicious",
+          "store"
+        ],
+        "note": "Event không đáng ngờ được lưu mà không tạo alert hoặc incident."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "intake",
+      "label": "Tiếp nhận sự kiện"
+    },
+    {
+      "id": "detection",
+      "label": "Phát hiện xác định"
+    },
+    {
+      "id": "correlation",
+      "label": "Tương quan xác định"
+    },
+    {
+      "id": "incident",
+      "label": "Kết quả: incident hiện có"
+    },
+    {
+      "id": "new_case",
+      "label": "Kết quả: incident mới",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "prepare",
+      "label": "Chuẩn bị dữ kiện tin cậy",
+      "fromCol": 0,
+      "toCol": 2
+    },
+    {
+      "id": "detect",
+      "label": "Phát hiện",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "security"
+    },
+    {
+      "id": "correlate_act",
+      "label": "Tương quan + hành động incident",
+      "fromCol": 5,
+      "toCol": 5,
+      "variant": "emphasis"
+    }
+  ],
+  "groups": [
+    {
+      "id": "rule_gate",
+      "label": "Cổng quy tắc",
+      "lane": "detection",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "security"
+    },
+    {
+      "id": "case_gate",
+      "label": "Cổng bằng chứng",
+      "lane": "correlation",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "receive",
+    "validate",
+    "normalize",
+    "rules",
+    "suspicious",
+    "find_score",
+    "existing",
+    "update_path"
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "receive"
+    ],
+    "allowedTerminals": [
+      "store",
+      "update_path",
+      "create_path"
+    ],
+    "requiredEdges": [
+      {
+        "from": "suspicious",
+        "to": "store"
+      },
+      {
+        "from": "existing",
+        "to": "update_path"
+      },
+      {
+        "from": "existing",
+        "to": "create_path"
+      }
+    ],
+    "requiredPaths": [
+      {
+        "from": "receive",
+        "to": "suspicious"
+      },
+      {
+        "from": "suspicious",
+        "to": "update_path"
+      },
+      {
+        "from": "suspicious",
+        "to": "create_path"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "receive",
+      "lane": "intake",
+      "col": 0,
+      "type": "external",
+      "label": "Nhận sự kiện",
+      "sublabel": "Loại sự kiện",
+      "tag": "Đầu vào: RawEvent",
+      "width": 138
+    },
+    {
+      "id": "validate",
+      "lane": "intake",
+      "col": 1,
+      "type": "security",
+      "label": "Kiểm tra",
+      "sublabel": "Trường bắt buộc",
+      "tag": "Đầu ra: chấp nhận/từ chối",
+      "width": 138
+    },
+    {
+      "id": "normalize",
+      "lane": "intake",
+      "col": 2,
+      "type": "backend",
+      "label": "Chuẩn hóa",
+      "sublabel": "Ngữ nghĩa trường",
+      "tag": "Đầu ra: NormalizedEvent",
+      "width": 138
+    },
+    {
+      "id": "rules",
+      "lane": "detection",
+      "col": 3,
+      "type": "security",
+      "label": "Chạy rule detection",
+      "sublabel": "IOC + hành vi + FP/FN",
+      "tag": "XÁC ĐỊNH",
+      "width": 138
+    },
+    {
+      "id": "suspicious",
+      "lane": "detection",
+      "col": 4,
+      "type": "security",
+      "label": "Đáng ngờ?",
+      "sublabel": "Ngưỡng quy tắc",
+      "tag": "Quyết định",
+      "width": 138
+    },
+    {
+      "id": "store",
+      "lane": "detection",
+      "col": 5,
+      "type": "database",
+      "label": "Lưu sự kiện",
+      "sublabel": "Giữ bằng chứng",
+      "tag": "Không có alert",
+      "width": 138
+    },
+    {
+      "id": "find_score",
+      "lane": "correlation",
+      "col": 4,
+      "type": "security",
+      "label": "Tìm + tính điểm",
+      "sublabel": "Time/entity/IOC",
+      "tag": "LÕI XÁC ĐỊNH",
+      "width": 150
+    },
+    {
+      "id": "existing",
+      "lane": "correlation",
+      "col": 5,
+      "type": "security",
+      "label": "Incident đã tồn tại?",
+      "sublabel": "Alert so với Incident",
+      "tag": "Quyết định",
+      "width": 138
+    },
+    {
+      "id": "update_path",
+      "lane": "incident",
+      "col": 5,
+      "type": "security",
+      "label": "Update → Map → Trigger",
+      "sublabel": "ATT&CK có bằng chứng",
+      "tag": "Case hiện có • ĐỀ XUẤT",
+      "width": 150
+    },
+    {
+      "id": "create_path",
+      "lane": "new_case",
+      "col": 5,
+      "type": "security",
+      "label": "Tạo → Map → Trigger",
+      "sublabel": "ATT&CK có bằng chứng",
+      "tag": "Case mới • ĐỀ XUẤT",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "from": "receive",
+      "to": "validate",
+      "label": "RawEvent"
+    },
+    {
+      "from": "validate",
+      "to": "normalize",
+      "label": "hợp lệ"
+    },
+    {
+      "from": "normalize",
+      "to": "rules",
+      "label": "NormalizedEvent",
+      "variant": "security"
+    },
+    {
+      "from": "rules",
+      "to": "suspicious",
+      "label": "kết quả quy tắc",
+      "variant": "security"
+    },
+    {
+      "from": "suspicious",
+      "to": "store",
+      "label": "Không",
+      "role": "branch",
+      "variant": "default"
+    },
+    {
+      "from": "suspicious",
+      "to": "find_score",
+      "label": "Có",
+      "role": "main",
+      "variant": "security"
+    },
+    {
+      "from": "find_score",
+      "to": "existing",
+      "label": "điểm tương quan",
+      "variant": "security"
+    },
+    {
+      "from": "existing",
+      "to": "update_path",
+      "label": "Có",
+      "variant": "security"
+    },
+    {
+      "from": "existing",
+      "to": "create_path",
+      "label": "Không",
+      "role": "branch",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "slate",
+      "title": "Nhận + Kiểm tra",
+      "items": [
+        "Chức năng: nhận RawEvent và từ chối đầu vào sai; Đầu vào: event fixture; Đầu ra: event được chấp nhận/từ chối.",
+        "Kiến thức dùng: Event so với Alert và Incident, nhóm log, trường bảo mật bắt buộc.",
+        "Cần học trước: đọc event auth/process/network cơ bản; Học sau — Mở rộng tương lai: streaming ingestion; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Chuẩn hóa",
+      "items": [
+        "Chức năng: giữ dữ kiện nguồn trong ngữ nghĩa chung; Đầu vào: RawEvent hợp lệ; Đầu ra: NormalizedEvent.",
+        "Kiến thức dùng: user/host/IP/process/domain, process tree, hướng mạng và timestamp.",
+        "Cần học trước: ngữ nghĩa trường; Học sau — Mở rộng tương lai: ECS/OCSF; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Chạy quy tắc + Cổng đáng ngờ",
+      "items": [
+        "Chức năng: áp dụng ngưỡng/logic hành vi rõ ràng; Đầu vào: NormalizedEvent; Đầu ra: Detection hoặc không có alert.",
+        "Kiến thức dùng: detection engineering, IOC so với hành vi, FP/FN, brute force và PowerShell theo ngữ cảnh.",
+        "Cần học trước: hiệu chỉnh kịch bản golden và benign; Học sau — Mở rộng tương lai: Sigma/ML; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Tìm liên quan + Điểm tương quan",
+      "items": [
+        "Chức năng: lấy evidence lân cận và chấm điểm theo user/host/IP/process/time/IOC chung; Đầu vào: Detection + event; Đầu ra: nhóm liên quan có điểm.",
+        "Kiến thức dùng: suy luận thời gian, quan hệ thực thể/tiến trình và bằng chứng.",
+        "Cần học trước: giải thích từng phần đóng góp vào điểm; Học sau — Mở rộng tương lai: tương quan đồ thị/xác suất; Độ sâu: Trung cấp."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Cổng Incident hiện có",
+      "items": [
+        "Chức năng: chọn cập nhật hay tạo mới; Đầu vào: nhóm tương quan; Đầu ra: hành động incident.",
+        "Kiến thức dùng: Alert so với Incident, vòng đời, truy vết evidence, severity so với confidence.",
+        "Cần học trước: giải thích khi nào nhiều alert tạo thành một case; Học sau — Mở rộng tương lai: hàng đợi triage chính thức; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Cập nhật/Tạo → MITRE → Điều tra",
+      "items": [
+        "Chức năng: lưu evidence, áp dụng ánh xạ evidence-to-technique xác định, rồi kích hoạt hỗ trợ điều tra; Đầu vào: hành động incident; Đầu ra: incident mới/đã cập nhật sẵn sàng cho retrieval và copilot.",
+        "Kiến thức dùng: timeline incident; tactic/technique/sub-technique/TTP; ánh xạ có bằng chứng.",
+        "Cần học trước: ánh xạ T1110/T1059.001 không dùng LLM; Học sau — Mở rộng tương lai: ATT&CK rộng hơn; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Ranh giới cứng",
+      "items": [
+        "LLM không quyết định Đáng ngờ?, điểm tương quan, incident membership hoặc ánh xạ ATT&CK",
+        "RAG/LLM chỉ bắt đầu sau khi đã có dữ kiện incident xác định",
+        "Mọi node chưa triển khai đều là Đề xuất; năng lực nâng cao là Mở rộng tương lai"
+      ]
+    }
+  ]
+}

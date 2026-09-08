@@ -1,0 +1,11 @@
+embedding:
+  provider: local
+  model: sentence-transformers/all-MiniLM-L6-v2
+retrieval:
+  top_k: 5
+  candidate_k: 20
+  rerank_k: 5
+  hybrid_enabled: false
+  reranker_enabled: false
+qdrant:
+  collection: security_knowledge

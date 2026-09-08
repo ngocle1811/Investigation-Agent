@@ -1,0 +1,35 @@
+{
+  "type": "bundle",
+  "id": "bundle--test",
+  "objects": [
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--powershell",
+      "name": "PowerShell",
+      "description": "Adversaries may abuse PowerShell commands and scripts for execution.",
+      "modified": "2025-10-24T12:00:00.000Z",
+      "x_mitre_version": "1.5",
+      "x_mitre_is_subtechnique": true,
+      "kill_chain_phases": [
+        {"kill_chain_name": "mitre-attack", "phase_name": "execution"}
+      ],
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1059.001",
+          "url": "https://attack.mitre.org/techniques/T1059/001/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--ignored",
+      "name": "Ignored Technique",
+      "description": "Not allowlisted.",
+      "external_references": [
+        {"source_name": "mitre-attack", "external_id": "T9999"}
+      ]
+    },
+    {"type": "campaign", "id": "campaign--ignored", "name": "Ignored campaign"}
+  ]
+}

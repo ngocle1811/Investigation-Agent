@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Event → Incident → Grounded Report Data Flow — PROPOSED MVP",
+    "output": "03-event-to-incident.dataflow.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 760],
+    "views": [
+      {"id": "deterministic_facts", "label": "Deterministic fact pipeline", "focus": ["raw_event", "normalized_event", "detection", "correlated_group", "incident", "mitre_mapping"], "note": "Follow source facts through deterministic rules, evidence linkage, case creation, and ATT&CK mapping."},
+      {"id": "grounded_report", "label": "Grounded report inputs", "focus": ["incident", "mitre_mapping", "retrieved_chunks", "report"], "note": "The AI layer receives an incident plus cited knowledge; it does not create detection facts."}
+    ]
+  },
+  "stages": [
+    {"label": "Ingest"},
+    {"label": "Normalize + detect"},
+    {"label": "Correlate + model"},
+    {"label": "Understand + retrieve"},
+    {"label": "Analyst output"}
+  ],
+  "nodes": [
+    {"id": "raw_event", "type": "external", "label": "Raw Event", "sublabel": "JSON/JSONL fixture", "stage": 0, "row": 0, "tag": "PROPOSED", "width": 136},
+    {"id": "normalized_event", "type": "backend", "label": "Normalized Event", "sublabel": "common semantics", "stage": 1, "row": 0, "tag": "PROPOSED", "width": 136},
+    {"id": "detection", "type": "security", "label": "Detection", "sublabel": "rule + evidence", "stage": 1, "row": 2, "tag": "DETERMINISTIC", "width": 136},
+    {"id": "correlated_group", "type": "security", "label": "Correlated Group", "sublabel": "linked evidence", "stage": 2, "row": 2, "tag": "DETERMINISTIC CORE", "width": 136},
+    {"id": "incident", "type": "security", "label": "Incident", "sublabel": "case + timeline", "stage": 2, "row": 4, "tag": "DETERMINISTIC", "width": 136},
+    {"id": "mitre_mapping", "type": "security", "label": "MITRE Mapping", "sublabel": "technique + evidence", "stage": 3, "row": 4, "tag": "DETERMINISTIC", "width": 136},
+    {"id": "retrieved_chunks", "type": "database", "label": "Retrieved Chunks", "sublabel": "versioned citations", "stage": 3, "row": 2, "tag": "RAG • AI SUPPORT", "width": 136},
+    {"id": "report", "type": "external", "label": "Investigation Report", "sublabel": "validated structured output", "stage": 4, "row": 2, "tag": "PROPOSED", "width": 144}
+  ],
+  "flows": [
+    {"id": "raw_to_normalized", "from": "raw_event", "to": "normalized_event", "label": "RawEvent", "classification": "Security concept: field semantics", "variant": "default", "labelDy": 53},
+    {"id": "normalized_to_detection", "from": "normalized_event", "to": "detection", "label": "NormalizedEvent", "classification": "Security concept: rules + FP/FN", "variant": "security", "labelAt": [315, 270]},
+    {"id": "detection_to_group", "from": "detection", "to": "correlated_group", "label": "Detection + evidence", "classification": "Security concept: time/entity links", "variant": "security", "labelDy": 53},
+    {"id": "group_to_incident", "from": "correlated_group", "to": "incident", "label": "Related evidence", "classification": "Security concept: Alert vs Incident", "variant": "security", "labelAt": [530, 500]},
+    {"id": "incident_to_mitre", "from": "incident", "to": "mitre_mapping", "label": "Observed behavior", "classification": "Security concept: evidence-backed TTP", "variant": "security", "labelDy": 53},
+    {"id": "mitre_to_chunks", "from": "mitre_mapping", "to": "retrieved_chunks", "label": "Technique IDs + entities", "classification": "Security concept: trusted sources", "variant": "dashed", "labelAt": [745, 500]},
+    {"id": "chunks_to_report", "from": "retrieved_chunks", "to": "report", "label": "Incident + cited chunks", "classification": "Security concept: fact vs hypothesis", "variant": "dashed", "labelDy": 53}
+  ],
+  "cards": [
+    {"dot": "rose", "title": "Deterministic Security Logic", "items": ["Normalize known fields, run explicit rules, link evidence, model the incident, and map only evidenced ATT&CK behavior", "Inputs and outputs remain inspectable and reproducible", "LLM output is never fed back as a primary detection or correlation fact"]},
+    {"dot": "amber", "title": "Security Understanding", "items": ["Incident state separates alerts from a case", "ATT&CK mapping explains behavior through tactics, techniques, and sub-techniques", "Evidence IDs support every mapped technique"]},
+    {"dot": "violet", "title": "RAG / LLM Boundary", "items": ["RAG retrieves versioned, cited security knowledge", "The copilot synthesizes the report from the incident and retrieved chunks", "Missing support must produce ‘Possible hypothesis’ or ‘Insufficient evidence’"]}
+  ]
+}

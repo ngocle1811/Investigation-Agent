@@ -1,0 +1,67 @@
+microsoft_pages:
+  - id: microsoft-event-4624
+    url: https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624
+    raw_filename: event-4624.html
+    source_type: windows_event_doc
+    event_id: 4624
+    version: current
+  - id: microsoft-event-4625
+    url: https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4625
+    raw_filename: event-4625.html
+    source_type: windows_event_doc
+    event_id: 4625
+    version: current
+  - id: microsoft-event-4688
+    url: https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4688
+    raw_filename: event-4688.html
+    source_type: windows_event_doc
+    event_id: 4688
+    version: current
+  - id: microsoft-event-4698
+    url: https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4698
+    raw_filename: event-4698.html
+    source_type: windows_event_doc
+    event_id: 4698
+    version: current
+
+sysmon_pages:
+  - id: microsoft-sysmon-events
+    url: https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
+    raw_filename: sysmon.html
+    source_type: sysmon_doc
+    version: current
+
+sigma_rules:
+  - id: sigma-powershell-encoded-command
+    url: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/windows/process_creation/proc_creation_win_powershell_base64_encoded_cmd_patterns.yml
+    raw_filename: proc_creation_win_powershell_base64_encoded_cmd_patterns.yml
+    source_type: sigma_rule
+    version: master
+  - id: sigma-office-outlook-child-process
+    url: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/windows/process_creation/proc_creation_win_office_outlook_susp_child_processes.yml
+    raw_filename: proc_creation_win_office_outlook_susp_child_processes.yml
+    source_type: sigma_rule
+    version: master
+  - id: sigma-scheduled-task-creation
+    url: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/windows/process_creation/proc_creation_win_schtasks_creation.yml
+    raw_filename: proc_creation_win_schtasks_creation.yml
+    source_type: sigma_rule
+    version: master
+
+mitre_attack:
+  id: mitre-enterprise-attack-19.1
+  url: https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack-19.1.json
+  raw_filename: enterprise-attack-19.1.json
+  source_type: mitre_attack
+  version: "19.1"
+  technique_allowlist:
+    - T1003
+    - T1003.001
+    - T1053
+    - T1053.005
+    - T1059
+    - T1059.001
+    - T1110
+    - T1110.001
+    - T1204
+    - T1204.002

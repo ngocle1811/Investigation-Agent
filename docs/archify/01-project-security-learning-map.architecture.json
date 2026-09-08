@@ -1,0 +1,272 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Security Event Correlation & MITRE ATT&CK Copilot — PROPOSED MVP DESIGN",
+    "output": "01-project-security-learning-map.architecture.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [1300, 760],
+    "views": [
+      {
+        "id": "deterministic-core",
+        "label": "Deterministic security core",
+        "focus": ["events", "normalizer", "detection", "correlation", "incident", "mitre"],
+        "note": "Rules, evidence links, incident state, and ATT&CK mappings are deterministic and testable."
+      },
+      {
+        "id": "ai-support",
+        "label": "Grounded AI support",
+        "focus": ["incident", "mitre", "rag", "copilot", "report"],
+        "note": "RAG supplies cited knowledge; the LLM drafts analysis without inventing evidence."
+      },
+      {
+        "id": "learning-path",
+        "label": "Learning path",
+        "focus": ["events", "normalizer", "detection", "correlation", "incident", "mitre", "rag", "copilot", "report"],
+        "note": "Read the cards in workflow order to see prerequisites, deferred topics, and required depth."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "events",
+      "type": "external",
+      "label": "Security Events",
+      "sublabel": "RawEvent fixtures",
+      "tag": "PROPOSED",
+      "pos": [40, 140],
+      "size": [180, 76]
+    },
+    {
+      "id": "normalizer",
+      "type": "backend",
+      "label": "Normalizer",
+      "sublabel": "Common event schema",
+      "tag": "PROPOSED",
+      "pos": [300, 140],
+      "size": [180, 76]
+    },
+    {
+      "id": "detection",
+      "type": "security",
+      "label": "Detection Rules",
+      "sublabel": "Deterministic alerts",
+      "tag": "CORE • PROPOSED",
+      "pos": [560, 140],
+      "size": [180, 76]
+    },
+    {
+      "id": "correlation",
+      "type": "security",
+      "label": "Correlation Engine",
+      "sublabel": "Evidence grouping",
+      "tag": "CORE • PROPOSED",
+      "pos": [820, 140],
+      "size": [180, 76]
+    },
+    {
+      "id": "incident",
+      "type": "security",
+      "label": "Incident",
+      "sublabel": "Investigation case",
+      "tag": "CORE • PROPOSED",
+      "pos": [820, 330],
+      "size": [180, 76]
+    },
+    {
+      "id": "mitre",
+      "type": "security",
+      "label": "MITRE ATT&CK",
+      "sublabel": "Evidence mapping",
+      "tag": "CORE • PROPOSED",
+      "pos": [560, 330],
+      "size": [180, 76]
+    },
+    {
+      "id": "rag",
+      "type": "database",
+      "label": "Security RAG",
+      "sublabel": "Cited knowledge",
+      "tag": "AI LAYER • PROPOSED",
+      "pos": [560, 520],
+      "size": [180, 76]
+    },
+    {
+      "id": "copilot",
+      "type": "backend",
+      "label": "Investigation Copilot",
+      "sublabel": "Grounded synthesis",
+      "tag": "AI LAYER • PROPOSED",
+      "pos": [820, 520],
+      "size": [180, 76]
+    },
+    {
+      "id": "report",
+      "type": "external",
+      "label": "Investigation Report",
+      "sublabel": "Analyst-facing output",
+      "tag": "PROPOSED",
+      "pos": [1080, 520],
+      "size": [180, 76]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "1 — SECURITY DATA PROCESSING",
+      "wraps": ["events", "normalizer", "detection", "correlation"],
+      "pad": 24
+    },
+    {
+      "kind": "security-group",
+      "label": "2 — SECURITY UNDERSTANDING",
+      "wraps": ["incident", "mitre"],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "3 — AI INVESTIGATION SUPPORT",
+      "wraps": ["rag", "copilot", "report"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    {"id": "events-normalized", "from": "events", "to": "normalizer", "label": "RawEvent"},
+    {"id": "normalized-detected", "from": "normalizer", "to": "detection", "label": "NormalizedEvent", "variant": "security", "labelDy": 62},
+    {"id": "detected-correlated", "from": "detection", "to": "correlation", "label": "Detection + event", "variant": "security", "labelDy": 62},
+    {"id": "correlated-incident", "from": "correlation", "to": "incident", "label": "Create / update", "variant": "security", "labelDy": 62},
+    {"id": "incident-mitre", "from": "incident", "to": "mitre", "label": "Observed behavior", "variant": "security", "labelDy": 62},
+    {"id": "mitre-rag", "from": "mitre", "to": "rag", "label": "Technique IDs + entities", "variant": "emphasis", "labelDy": 62},
+    {"id": "rag-copilot", "from": "rag", "to": "copilot", "label": "Cited chunks", "variant": "dashed", "labelDy": 62},
+    {"id": "copilot-report", "from": "copilot", "to": "report", "label": "Validated draft", "variant": "dashed", "labelDy": 62}
+  ],
+  "cards": [
+    {
+      "dot": "slate",
+      "title": "01 • Security Events — Proposed",
+      "items": [
+        "What this step does: accepts JSON/JSONL authentication, process, and network fixtures.",
+        "Input: raw security logs/events.",
+        "Output: RawEvent objects.",
+        "Security knowledge needed: SOC roles; Event vs Alert vs Incident; SIEM vs EDR; three basic log families and common fields.",
+        "Learn before coding: explain Event, Alert, Incident and read one auth, process, and network event.",
+        "Can learn later — Future Extension: Splunk, Elastic, EDR APIs, Kafka, advanced Windows Event IDs.",
+        "Depth required: Basic working knowledge.",
+        "Why this knowledge matters: input facts must be interpreted without turning every event into an alert."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "02 • Normalizer — Proposed",
+      "items": [
+        "What this step does: maps source-specific fields into one semantic event contract.",
+        "Input: RawEvent objects.",
+        "Output: NormalizedEvent objects with stable identifiers, entities, and timestamps.",
+        "Security knowledge needed: user/host/IP/process/domain meaning; parent-child processes; source/destination; timeline ordering.",
+        "Learn before coding: interpret fields and explain why winword.exe → powershell.exe may matter.",
+        "Can learn later — Future Extension: ECS, OCSF, full common-schema compatibility.",
+        "Depth required: Basic working knowledge.",
+        "Why this knowledge matters: syntactically valid normalization can still destroy security meaning."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "03 • Detection Rules — Proposed • Deterministic",
+      "items": [
+        "What this step does: applies explicit thresholds and behavior rules to find suspicious activity.",
+        "Input: NormalizedEvent objects.",
+        "Output: Detection/Alert with rule ID, evidence, severity, and rationale.",
+        "Security knowledge needed: detection engineering; IOC vs behavior/TTP; thresholds; false positives/negatives; brute force and contextual PowerShell/network suspicion.",
+        "Learn before coding: tune a simple rule and explain why PowerShell alone is not malicious.",
+        "Can learn later — Future Extension: Sigma, YARA, IDS signatures, ML anomaly detection.",
+        "Depth required: Basic working knowledge.",
+        "Why this knowledge matters: detection asks ‘What is suspicious?’ and must be reproducible—never delegated to the LLM."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "04 • Correlation Engine — Proposed • Deterministic Core",
+      "items": [
+        "What this step does: links related detections/events using time, entities, process chains, and shared IOCs.",
+        "Input: events plus detections.",
+        "Output: correlated evidence group and create/update-incident decision.",
+        "Security knowledge needed: event correlation; temporal reasoning; entity/process relationships; evidence; Alert vs Incident.",
+        "Learn before coding: justify a score using same user/host/IP/process, time proximity, and shared IOC.",
+        "Can learn later — Future Extension: graph databases, attack graphs, probabilistic correlation, ML clustering.",
+        "Depth required: Intermediate (start basic, deepen while testing).",
+        "Why this knowledge matters: correlation asks ‘Do these suspicious facts belong to one case?’ and is the MVP’s core security logic."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "05 • Incident — Proposed • Deterministic",
+      "items": [
+        "What this step does: turns correlated evidence into a durable investigation case and timeline.",
+        "Input: related events and detections.",
+        "Output: Incident object with status, severity, entities, evidence IDs, and timeline.",
+        "Security knowledge needed: lifecycle; triage; severity vs confidence; raw evidence vs finding vs hypothesis.",
+        "Learn before coding: explain Candidate/Open/Investigating/Triaged/Resolved/Closed and preserve evidence traceability.",
+        "Can learn later — Future Extension: containment, eradication, recovery, formal SOC playbooks.",
+        "Depth required: Basic working knowledge.",
+        "Why this knowledge matters: Evidence ≠ Hypothesis ≠ Confirmed Fact."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "06 • MITRE ATT&CK Mapping — Proposed • Deterministic",
+      "items": [
+        "What this step does: maps observed, evidenced behaviors to explicit ATT&CK technique IDs.",
+        "Input: incident detections and observed behaviors.",
+        "Output: technique/sub-technique IDs linked back to evidence.",
+        "Security knowledge needed: ATT&CK, tactic, technique, sub-technique, TTP, evidence-to-technique mapping.",
+        "Learn before coding: distinguish tactic from technique and support T1110/T1059.001 with evidence.",
+        "Can learn later — Future Extension: broad matrix coverage and automated ATT&CK content updates; do not memorize the matrix.",
+        "Depth required: Beginner to Basic working knowledge.",
+        "Why this knowledge matters: deterministic mapping prevents unsupported LLM guesses from becoming security facts."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "07 • Security RAG — Proposed • AI Support",
+      "items": [
+        "What this step does: retrieves relevant, versioned ATT&CK/security guidance with source metadata.",
+        "Input: incident, technique IDs, keywords, and entities.",
+        "Output: relevant cited chunks.",
+        "Security knowledge needed: reading ATT&CK descriptions; investigation guidance; trusted sources; citation traceability.",
+        "Learn before coding: judge whether a source supports an investigation claim; reuse existing chunking/search/reranking skills.",
+        "Can learn later — Future Extension: hybrid retrieval, advanced reranking, larger security corpora.",
+        "Depth required: Security Beginner; RAG uses existing AI skills.",
+        "Why this knowledge matters: RAG supplies knowledge—it does not replace detection or correlation."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "08 • LLM Investigation Copilot — Proposed • AI Support",
+      "items": [
+        "What this step does: synthesizes evidence, timeline, ATT&CK mappings, and retrieved context into a structured draft.",
+        "Input: incident, evidence, timeline, mappings, and cited chunks.",
+        "Output: summary, severity explanation, evidence, hypotheses, next steps, confidence, and citations.",
+        "Security knowledge needed: SOC investigation questions; evidence vs hypothesis; timeline; IOC/TTP use; basic investigation workflow.",
+        "Learn before coding: ask what/when/who/where/evidence/next and label uncertainty explicitly.",
+        "Can learn later — Future Extension: multi-agent SOC and automated remediation.",
+        "Depth required: Security Basic; reuse structured-output, validation, retry, fallback, HITL, and evaluation skills.",
+        "Why this knowledge matters: the LLM must not invent events, IOCs, techniques, or unsupported root cause."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "09 • Investigation Report — Proposed",
+      "items": [
+        "What this step does: presents an analyst-friendly, reviewable investigation artifact.",
+        "Input: validated structured copilot output plus traceable source/evidence references.",
+        "Output: incident summary, severity, timeline, key evidence, techniques, hypotheses, next steps, and citations.",
+        "Security knowledge needed: analyst report structure; evidence traceability; fact vs hypothesis; severity explanation.",
+        "Learn before coding: write a short report where every factual claim links to evidence or a cited source.",
+        "Can learn later — Future Extension: SOC case-system export and formal report templates.",
+        "Depth required: Beginner.",
+        "Why this knowledge matters: analysts need auditable facts and clearly bounded hypotheses, not fluent unsupported prose."
+      ]
+    }
+  ]
+}

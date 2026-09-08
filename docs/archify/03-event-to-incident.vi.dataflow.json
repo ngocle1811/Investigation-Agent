@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Luồng dữ liệu Event → Incident → Báo cáo có căn cứ — MVP ĐỀ XUẤT",
+    "output": "03-event-to-incident.vi.dataflow.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      760
+    ],
+    "views": [
+      {
+        "id": "deterministic_facts",
+        "label": "Pipeline dữ kiện xác định",
+        "focus": [
+          "raw_event",
+          "normalized_event",
+          "detection",
+          "correlated_group",
+          "incident",
+          "mitre_mapping"
+        ],
+        "note": "Theo dõi dữ kiện nguồn qua quy tắc xác định, liên kết bằng chứng, tạo case và ánh xạ ATT&CK."
+      },
+      {
+        "id": "grounded_report",
+        "label": "Đầu vào báo cáo có căn cứ",
+        "focus": [
+          "incident",
+          "mitre_mapping",
+          "retrieved_chunks",
+          "report"
+        ],
+        "note": "Lớp AI nhận incident cùng kiến thức có trích dẫn; nó không tạo dữ kiện detection."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "label": "Nạp dữ liệu"
+    },
+    {
+      "label": "Chuẩn hóa + phát hiện"
+    },
+    {
+      "label": "Tương quan + mô hình hóa"
+    },
+    {
+      "label": "Hiểu + truy xuất"
+    },
+    {
+      "label": "Đầu ra chuyên viên"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "raw_event",
+      "type": "external",
+      "label": "Sự kiện thô",
+      "sublabel": "Fixture JSON/JSONL",
+      "stage": 0,
+      "row": 0,
+      "tag": "ĐỀ XUẤT",
+      "width": 136
+    },
+    {
+      "id": "normalized_event",
+      "type": "backend",
+      "label": "Sự kiện chuẩn hóa",
+      "sublabel": "Ngữ nghĩa chung",
+      "stage": 1,
+      "row": 0,
+      "tag": "ĐỀ XUẤT",
+      "width": 136
+    },
+    {
+      "id": "detection",
+      "type": "security",
+      "label": "Detection",
+      "sublabel": "Quy tắc + bằng chứng",
+      "stage": 1,
+      "row": 2,
+      "tag": "XÁC ĐỊNH",
+      "width": 136
+    },
+    {
+      "id": "correlated_group",
+      "type": "security",
+      "label": "Nhóm tương quan",
+      "sublabel": "Bằng chứng liên kết",
+      "stage": 2,
+      "row": 2,
+      "tag": "LÕI XÁC ĐỊNH",
+      "width": 136
+    },
+    {
+      "id": "incident",
+      "type": "security",
+      "label": "Incident",
+      "sublabel": "Case + timeline",
+      "stage": 2,
+      "row": 4,
+      "tag": "XÁC ĐỊNH",
+      "width": 136
+    },
+    {
+      "id": "mitre_mapping",
+      "type": "security",
+      "label": "Ánh xạ MITRE",
+      "sublabel": "Technique + bằng chứng",
+      "stage": 3,
+      "row": 4,
+      "tag": "XÁC ĐỊNH",
+      "width": 136
+    },
+    {
+      "id": "retrieved_chunks",
+      "type": "database",
+      "label": "Chunk đã truy xuất",
+      "sublabel": "Trích dẫn có phiên bản",
+      "stage": 3,
+      "row": 2,
+      "tag": "RAG • HỖ TRỢ AI",
+      "width": 136
+    },
+    {
+      "id": "report",
+      "type": "external",
+      "label": "Báo cáo điều tra",
+      "sublabel": "Đầu ra cấu trúc đã kiểm định",
+      "stage": 4,
+      "row": 2,
+      "tag": "ĐỀ XUẤT",
+      "width": 144
+    }
+  ],
+  "flows": [
+    {
+      "id": "raw_to_normalized",
+      "from": "raw_event",
+      "to": "normalized_event",
+      "label": "RawEvent",
+      "classification": "Khái niệm bảo mật: ngữ nghĩa trường",
+      "variant": "default",
+      "labelDy": 53
+    },
+    {
+      "id": "normalized_to_detection",
+      "from": "normalized_event",
+      "to": "detection",
+      "label": "NormalizedEvent",
+      "classification": "Khái niệm bảo mật: quy tắc + FP/FN",
+      "variant": "security",
+      "labelAt": [
+        315,
+        270
+      ]
+    },
+    {
+      "id": "detection_to_group",
+      "from": "detection",
+      "to": "correlated_group",
+      "label": "Detection + evidence",
+      "classification": "Khái niệm bảo mật: liên kết thời gian/thực thể",
+      "variant": "security",
+      "labelDy": 53,
+      "labelDx": -20
+    },
+    {
+      "id": "group_to_incident",
+      "from": "correlated_group",
+      "to": "incident",
+      "label": "Bằng chứng liên quan",
+      "classification": "Khái niệm bảo mật: Alert so với Incident",
+      "variant": "security",
+      "labelAt": [
+        530,
+        500
+      ]
+    },
+    {
+      "id": "incident_to_mitre",
+      "from": "incident",
+      "to": "mitre_mapping",
+      "label": "Hành vi quan sát được",
+      "classification": "Khái niệm bảo mật: TTP có bằng chứng",
+      "variant": "security",
+      "labelDy": 53
+    },
+    {
+      "id": "mitre_to_chunks",
+      "from": "mitre_mapping",
+      "to": "retrieved_chunks",
+      "label": "Technique ID + thực thể",
+      "classification": "Khái niệm bảo mật: nguồn tin cậy",
+      "variant": "dashed",
+      "labelAt": [
+        745,
+        500
+      ]
+    },
+    {
+      "id": "chunks_to_report",
+      "from": "retrieved_chunks",
+      "to": "report",
+      "label": "Incident + cited chunks",
+      "classification": "Khái niệm bảo mật: fact so với hypothesis",
+      "variant": "dashed",
+      "labelDy": 53,
+      "labelDx": 20
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Logic bảo mật xác định",
+      "items": [
+        "Chuẩn hóa trường đã biết, chạy quy tắc rõ ràng, liên kết bằng chứng, mô hình hóa incident và chỉ ánh xạ hành vi ATT&CK có bằng chứng",
+        "Đầu vào và đầu ra luôn kiểm tra và tái lập được",
+        "Đầu ra LLM không bao giờ được đưa ngược lại làm dữ kiện detection hoặc correlation chính"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Hiểu biết bảo mật",
+      "items": [
+        "Trạng thái Incident tách alert khỏi một case",
+        "Ánh xạ ATT&CK giải thích hành vi bằng tactic, technique và sub-technique",
+        "Evidence ID hỗ trợ mọi technique được ánh xạ"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Ranh giới RAG / LLM",
+      "items": [
+        "RAG truy xuất kiến thức bảo mật có phiên bản và trích dẫn",
+        "Copilot tổng hợp báo cáo từ incident và các chunk đã truy xuất",
+        "Khi thiếu căn cứ phải ghi ‘Giả thuyết có thể’ hoặc ‘Không đủ bằng chứng’"
+      ]
+    }
+  ]
+}

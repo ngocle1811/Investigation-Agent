@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Tương quan sự kiện bảo mật & Copilot MITRE ATT&CK — THIẾT KẾ MVP ĐỀ XUẤT",
+    "output": "01-project-security-learning-map.vi.architecture.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1300,
+      760
+    ],
+    "views": [
+      {
+        "id": "deterministic-core",
+        "label": "Lõi bảo mật xác định",
+        "focus": [
+          "events",
+          "normalizer",
+          "detection",
+          "correlation",
+          "incident",
+          "mitre"
+        ],
+        "note": "Các quy tắc, liên kết bằng chứng, trạng thái sự cố và ánh xạ ATT&CK đều xác định và có thể kiểm thử."
+      },
+      {
+        "id": "ai-support",
+        "label": "Hỗ trợ AI có căn cứ",
+        "focus": [
+          "incident",
+          "mitre",
+          "rag",
+          "copilot",
+          "report"
+        ],
+        "note": "RAG cung cấp kiến thức có trích dẫn; LLM soạn phân tích mà không tự tạo bằng chứng."
+      },
+      {
+        "id": "learning-path",
+        "label": "Lộ trình học tập",
+        "focus": [
+          "events",
+          "normalizer",
+          "detection",
+          "correlation",
+          "incident",
+          "mitre",
+          "rag",
+          "copilot",
+          "report"
+        ],
+        "note": "Đọc các thẻ theo thứ tự workflow để thấy kiến thức tiên quyết, phần học sau và độ sâu yêu cầu."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "events",
+      "type": "external",
+      "label": "Sự kiện bảo mật",
+      "sublabel": "Fixture RawEvent",
+      "tag": "ĐỀ XUẤT",
+      "pos": [
+        40,
+        140
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "normalizer",
+      "type": "backend",
+      "label": "Bộ chuẩn hóa",
+      "sublabel": "Schema sự kiện chung",
+      "tag": "ĐỀ XUẤT",
+      "pos": [
+        300,
+        140
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "detection",
+      "type": "security",
+      "label": "Quy tắc phát hiện",
+      "sublabel": "Cảnh báo xác định",
+      "tag": "LÕI • ĐỀ XUẤT",
+      "pos": [
+        560,
+        140
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "correlation",
+      "type": "security",
+      "label": "Bộ máy tương quan",
+      "sublabel": "Nhóm bằng chứng",
+      "tag": "LÕI • ĐỀ XUẤT",
+      "pos": [
+        820,
+        140
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "incident",
+      "type": "security",
+      "label": "Sự cố",
+      "sublabel": "Hồ sơ điều tra",
+      "tag": "LÕI • ĐỀ XUẤT",
+      "pos": [
+        820,
+        330
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "mitre",
+      "type": "security",
+      "label": "MITRE ATT&CK",
+      "sublabel": "Ánh xạ theo bằng chứng",
+      "tag": "LÕI • ĐỀ XUẤT",
+      "pos": [
+        560,
+        330
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "rag",
+      "type": "database",
+      "label": "Security RAG",
+      "sublabel": "Kiến thức có trích dẫn",
+      "tag": "LỚP AI • ĐỀ XUẤT",
+      "pos": [
+        560,
+        520
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "copilot",
+      "type": "backend",
+      "label": "Copilot điều tra",
+      "sublabel": "Tổng hợp có căn cứ",
+      "tag": "LỚP AI • ĐỀ XUẤT",
+      "pos": [
+        820,
+        520
+      ],
+      "size": [
+        180,
+        76
+      ]
+    },
+    {
+      "id": "report",
+      "type": "external",
+      "label": "Báo cáo điều tra",
+      "sublabel": "Đầu ra cho chuyên viên",
+      "tag": "ĐỀ XUẤT",
+      "pos": [
+        1080,
+        520
+      ],
+      "size": [
+        180,
+        76
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "1 — XỬ LÝ DỮ LIỆU BẢO MẬT",
+      "wraps": [
+        "events",
+        "normalizer",
+        "detection",
+        "correlation"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "security-group",
+      "label": "2 — HIỂU BIẾT BẢO MẬT",
+      "wraps": [
+        "incident",
+        "mitre"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "3 — AI HỖ TRỢ ĐIỀU TRA",
+      "wraps": [
+        "rag",
+        "copilot",
+        "report"
+      ],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    {
+      "id": "events-normalized",
+      "from": "events",
+      "to": "normalizer",
+      "label": "RawEvent"
+    },
+    {
+      "id": "normalized-detected",
+      "from": "normalizer",
+      "to": "detection",
+      "label": "NormalizedEvent",
+      "variant": "security",
+      "labelDy": 62
+    },
+    {
+      "id": "detected-correlated",
+      "from": "detection",
+      "to": "correlation",
+      "label": "Detection + sự kiện",
+      "variant": "security",
+      "labelDy": 62
+    },
+    {
+      "id": "correlated-incident",
+      "from": "correlation",
+      "to": "incident",
+      "label": "Tạo / cập nhật",
+      "variant": "security",
+      "labelDy": 62
+    },
+    {
+      "id": "incident-mitre",
+      "from": "incident",
+      "to": "mitre",
+      "label": "Hành vi quan sát được",
+      "variant": "security",
+      "labelDy": 62
+    },
+    {
+      "id": "mitre-rag",
+      "from": "mitre",
+      "to": "rag",
+      "label": "Technique ID + thực thể",
+      "variant": "emphasis",
+      "labelDy": 62
+    },
+    {
+      "id": "rag-copilot",
+      "from": "rag",
+      "to": "copilot",
+      "label": "Chunk có trích dẫn",
+      "variant": "dashed",
+      "labelDy": 62
+    },
+    {
+      "id": "copilot-report",
+      "from": "copilot",
+      "to": "report",
+      "label": "Bản nháp đã kiểm định",
+      "variant": "dashed",
+      "labelDy": 62
+    }
+  ],
+  "cards": [
+    {
+      "dot": "slate",
+      "title": "01 • Sự kiện bảo mật — Đề xuất",
+      "items": [
+        "Chức năng: nhận fixture JSON/JSONL cho sự kiện xác thực, tiến trình và mạng.",
+        "Đầu vào: log/sự kiện bảo mật thô.",
+        "Đầu ra: đối tượng RawEvent.",
+        "Kiến thức bảo mật cần có: vai trò SOC; Event, Alert và Incident; SIEM so với EDR; ba nhóm log cơ bản và các trường phổ biến.",
+        "Cần học trước khi lập trình: giải thích Event, Alert, Incident và đọc một sự kiện xác thực, tiến trình, mạng.",
+        "Có thể học sau — Mở rộng tương lai: Splunk, Elastic, API EDR, Kafka và Windows Event ID nâng cao.",
+        "Độ sâu yêu cầu: kiến thức thực hành cơ bản.",
+        "Vì sao cần kiến thức này: phải hiểu đúng dữ kiện đầu vào mà không biến mọi event thành alert."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "02 • Bộ chuẩn hóa — Đề xuất",
+      "items": [
+        "Chức năng: ánh xạ các trường riêng của nguồn sang một hợp đồng sự kiện có chung ngữ nghĩa.",
+        "Đầu vào: đối tượng RawEvent.",
+        "Đầu ra: NormalizedEvent với ID, thực thể và timestamp ổn định.",
+        "Kiến thức bảo mật cần có: ý nghĩa user/host/IP/process/domain; tiến trình cha–con; nguồn/đích; thứ tự timeline.",
+        "Cần học trước khi lập trình: diễn giải các trường và giải thích vì sao winword.exe → powershell.exe có thể đáng chú ý.",
+        "Có thể học sau — Mở rộng tương lai: ECS, OCSF và khả năng tương thích schema toàn diện.",
+        "Độ sâu yêu cầu: kiến thức thực hành cơ bản.",
+        "Vì sao cần kiến thức này: chuẩn hóa đúng cú pháp vẫn có thể làm mất ý nghĩa bảo mật."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "03 • Quy tắc phát hiện — Đề xuất • Xác định",
+      "items": [
+        "Chức năng: áp dụng ngưỡng và quy tắc hành vi rõ ràng để tìm hoạt động đáng ngờ.",
+        "Đầu vào: đối tượng NormalizedEvent.",
+        "Đầu ra: Detection/Alert có rule ID, bằng chứng, mức độ nghiêm trọng và lý do.",
+        "Kiến thức bảo mật cần có: detection engineering; IOC so với hành vi/TTP; ngưỡng; false positive/negative; brute force và PowerShell/mạng theo ngữ cảnh.",
+        "Cần học trước khi lập trình: hiệu chỉnh một quy tắc đơn giản và giải thích vì sao riêng PowerShell không đồng nghĩa độc hại.",
+        "Có thể học sau — Mở rộng tương lai: Sigma, YARA, chữ ký IDS và phát hiện bất thường bằng ML.",
+        "Độ sâu yêu cầu: kiến thức thực hành cơ bản.",
+        "Vì sao cần kiến thức này: detection trả lời ‘Điều gì đáng ngờ?’ và phải tái lập được — không giao quyết định cho LLM."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "04 • Bộ máy tương quan — Đề xuất • Lõi xác định",
+      "items": [
+        "Chức năng: liên kết detection/event bằng thời gian, thực thể, chuỗi tiến trình và IOC dùng chung.",
+        "Đầu vào: sự kiện cùng detection.",
+        "Đầu ra: nhóm bằng chứng tương quan và quyết định tạo/cập nhật sự cố.",
+        "Kiến thức bảo mật cần có: tương quan sự kiện; suy luận thời gian; quan hệ thực thể/tiến trình; bằng chứng; Alert so với Incident.",
+        "Cần học trước khi lập trình: giải thích điểm số dựa trên cùng user/host/IP/process, độ gần thời gian và IOC chung.",
+        "Có thể học sau — Mở rộng tương lai: cơ sở dữ liệu đồ thị, attack graph, tương quan xác suất và phân cụm ML.",
+        "Độ sâu yêu cầu: Trung cấp; bắt đầu cơ bản rồi đào sâu khi kiểm thử.",
+        "Vì sao cần kiến thức này: correlation trả lời ‘Các dữ kiện đáng ngờ này có thuộc cùng một vụ việc không?’ và là lõi bảo mật của MVP."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "05 • Sự cố — Đề xuất • Xác định",
+      "items": [
+        "Chức năng: biến bằng chứng đã tương quan thành hồ sơ điều tra và timeline bền vững.",
+        "Đầu vào: sự kiện và detection có liên quan.",
+        "Đầu ra: Incident có trạng thái, severity, thực thể, evidence ID và timeline.",
+        "Kiến thức bảo mật cần có: vòng đời; triage; severity so với confidence; bằng chứng thô so với finding và hypothesis.",
+        "Cần học trước khi lập trình: giải thích Candidate/Open/Investigating/Triaged/Resolved/Closed và giữ truy vết bằng chứng.",
+        "Có thể học sau — Mở rộng tương lai: containment, eradication, recovery và playbook SOC chính thức.",
+        "Độ sâu yêu cầu: kiến thức thực hành cơ bản.",
+        "Vì sao cần kiến thức này: Evidence ≠ Hypothesis ≠ Confirmed Fact."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "06 • Ánh xạ MITRE ATT&CK — Đề xuất • Xác định",
+      "items": [
+        "Chức năng: ánh xạ hành vi đã quan sát và có bằng chứng sang ATT&CK technique ID rõ ràng.",
+        "Đầu vào: detection và hành vi quan sát được trong sự cố.",
+        "Đầu ra: technique/sub-technique ID liên kết ngược về bằng chứng.",
+        "Kiến thức bảo mật cần có: ATT&CK, tactic, technique, sub-technique, TTP và ánh xạ hành vi theo bằng chứng.",
+        "Cần học trước khi lập trình: phân biệt tactic với technique và chứng minh T1110/T1059.001 bằng evidence.",
+        "Có thể học sau — Mở rộng tương lai: bao phủ toàn ma trận và tự động cập nhật nội dung ATT&CK; không cần học thuộc ma trận.",
+        "Độ sâu yêu cầu: Nhập môn đến kiến thức thực hành cơ bản.",
+        "Vì sao cần kiến thức này: ánh xạ xác định ngăn suy đoán không có căn cứ của LLM trở thành dữ kiện bảo mật."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "07 • Security RAG — Đề xuất • Hỗ trợ AI",
+      "items": [
+        "Chức năng: truy xuất hướng dẫn ATT&CK/bảo mật phù hợp, có phiên bản và metadata nguồn.",
+        "Đầu vào: incident, technique ID, từ khóa và thực thể.",
+        "Đầu ra: các chunk phù hợp có trích dẫn.",
+        "Kiến thức bảo mật cần có: đọc mô tả ATT&CK; hướng dẫn điều tra; nguồn đáng tin cậy; truy vết trích dẫn.",
+        "Cần học trước khi lập trình: đánh giá nguồn có hỗ trợ nhận định điều tra hay không; tái sử dụng kỹ năng chunking/search/reranking hiện có.",
+        "Có thể học sau — Mở rộng tương lai: hybrid retrieval, reranking nâng cao và kho ngữ liệu bảo mật lớn hơn.",
+        "Độ sâu yêu cầu: Bảo mật nhập môn; RAG dùng kỹ năng AI sẵn có.",
+        "Vì sao cần kiến thức này: RAG cung cấp tri thức — không thay thế detection hoặc correlation."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "08 • LLM Copilot điều tra — Đề xuất • Hỗ trợ AI",
+      "items": [
+        "Chức năng: tổng hợp bằng chứng, timeline, ánh xạ ATT&CK và ngữ cảnh truy xuất thành bản nháp có cấu trúc.",
+        "Đầu vào: incident, evidence, timeline, mapping và chunk có trích dẫn.",
+        "Đầu ra: tóm tắt, giải thích severity, bằng chứng, giả thuyết, bước tiếp theo, confidence và citation.",
+        "Kiến thức bảo mật cần có: câu hỏi điều tra SOC; evidence so với hypothesis; timeline; cách dùng IOC/TTP; workflow điều tra cơ bản.",
+        "Cần học trước khi lập trình: hỏi điều gì/khi nào/ai/ở đâu/bằng chứng/bước tiếp theo và ghi rõ mức độ không chắc chắn.",
+        "Có thể học sau — Mở rộng tương lai: SOC đa tác tử và khắc phục tự động.",
+        "Độ sâu yêu cầu: Bảo mật cơ bản; tái sử dụng structured output, validation, retry, fallback, HITL và evaluation.",
+        "Vì sao cần kiến thức này: LLM không được bịa event, IOC, technique hoặc root cause thiếu căn cứ."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "09 • Báo cáo điều tra — Đề xuất",
+      "items": [
+        "Chức năng: trình bày artifact điều tra dễ đọc và dễ kiểm tra cho chuyên viên.",
+        "Đầu vào: đầu ra có cấu trúc đã kiểm định cùng tham chiếu nguồn/bằng chứng truy vết được.",
+        "Đầu ra: tóm tắt incident, severity, timeline, bằng chứng chính, technique, giả thuyết, bước tiếp theo và citation.",
+        "Kiến thức bảo mật cần có: cấu trúc báo cáo chuyên viên; truy vết bằng chứng; fact so với hypothesis; giải thích severity.",
+        "Cần học trước khi lập trình: viết báo cáo ngắn trong đó mọi khẳng định thực tế đều liên kết tới bằng chứng hoặc nguồn trích dẫn.",
+        "Có thể học sau — Mở rộng tương lai: xuất sang hệ thống quản lý case SOC và mẫu báo cáo chính thức.",
+        "Độ sâu yêu cầu: Nhập môn.",
+        "Vì sao cần kiến thức này: chuyên viên cần dữ kiện kiểm toán được và giả thuyết có giới hạn rõ ràng, không phải văn bản trôi chảy nhưng thiếu căn cứ."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,288 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Lộ trình Học → Xây dựng — MVP ĐỀ XUẤT",
+    "output": "02-learn-build-roadmap.vi.workflow.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "security-foundations",
+        "label": "Nền tảng đến tương quan",
+        "focus": [
+          "events_normalize",
+          "detect",
+          "correlate"
+        ],
+        "note": "Chỉ học các khái niệm bảo mật cần để xây lõi xác định."
+      },
+      {
+        "id": "security-understanding",
+        "label": "Incident và ATT&CK",
+        "focus": [
+          "correlate",
+          "incident_mitre"
+        ],
+        "note": "Biến bằng chứng thành hồ sơ, rồi gắn ý nghĩa ATT&CK có căn cứ."
+      },
+      {
+        "id": "ai-support",
+        "label": "Hỗ trợ AI có căn cứ",
+        "focus": [
+          "rag",
+          "copilot_evaluate"
+        ],
+        "note": "Chỉ tái sử dụng kỹ năng AI sau khi đã có dữ kiện bảo mật xác định."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "objective_a",
+      "label": "Mục tiêu học → xây dựng A"
+    },
+    {
+      "id": "objective_b",
+      "label": "Mục tiêu học → xây dựng B"
+    }
+  ],
+  "phases": [
+    {
+      "id": "foundation",
+      "label": "Nền tảng dữ liệu + phát hiện",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "deterministic",
+      "label": "Tương quan + hiểu biết bảo mật",
+      "fromCol": 1,
+      "toCol": 1,
+      "variant": "security"
+    },
+    {
+      "id": "ai_support",
+      "label": "Hỗ trợ AI có căn cứ + đánh giá",
+      "fromCol": 2,
+      "toCol": 2,
+      "variant": "dashed"
+    }
+  ],
+  "groups": [],
+  "mainPath": [
+    "events_normalize",
+    "detect",
+    "correlate",
+    "incident_mitre",
+    "rag",
+    "copilot_evaluate"
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "events_normalize"
+    ],
+    "allowedTerminals": [
+      "copilot_evaluate"
+    ],
+    "requiredPaths": [
+      {
+        "from": "events_normalize",
+        "to": "correlate"
+      },
+      {
+        "from": "correlate",
+        "to": "incident_mitre"
+      },
+      {
+        "from": "incident_mitre",
+        "to": "copilot_evaluate"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "events_normalize",
+      "lane": "objective_a",
+      "col": 0,
+      "type": "backend",
+      "label": "Event → Chuẩn hóa",
+      "sublabel": "SOC + trường → fixture/schema",
+      "tag": "30 phút + 2 giờ • ĐỀ XUẤT",
+      "width": 164
+    },
+    {
+      "id": "detect",
+      "lane": "objective_b",
+      "col": 0,
+      "type": "security",
+      "label": "Quy tắc phát hiện",
+      "sublabel": "IOC / hành vi / FP-FN → quy tắc",
+      "tag": "2 giờ • XÁC ĐỊNH",
+      "width": 164
+    },
+    {
+      "id": "correlate",
+      "lane": "objective_a",
+      "col": 1,
+      "type": "security",
+      "label": "Bộ máy tương quan",
+      "sublabel": "Liên kết bằng chứng → tính điểm",
+      "tag": "Nửa ngày • LÕI",
+      "width": 164
+    },
+    {
+      "id": "incident_mitre",
+      "lane": "objective_b",
+      "col": 1,
+      "type": "security",
+      "label": "Incident → ATT&CK",
+      "sublabel": "Triage + TTP → case + mapper",
+      "tag": "3 giờ • XÁC ĐỊNH",
+      "width": 164
+    },
+    {
+      "id": "rag",
+      "lane": "objective_a",
+      "col": 2,
+      "type": "database",
+      "label": "Security RAG",
+      "sublabel": "Trích dẫn → truy xuất",
+      "tag": "1 giờ • HỖ TRỢ AI",
+      "width": 164
+    },
+    {
+      "id": "copilot_evaluate",
+      "lane": "objective_b",
+      "col": 2,
+      "type": "backend",
+      "label": "Copilot → Đánh giá",
+      "sublabel": "Điều tra → báo cáo + kiểm thử",
+      "tag": "2 giờ + nửa ngày • HỖ TRỢ AI",
+      "width": 164
+    }
+  ],
+  "edges": [
+    {
+      "from": "events_normalize",
+      "to": "detect",
+      "variant": "security"
+    },
+    {
+      "from": "detect",
+      "to": "correlate",
+      "label": "alert + bằng chứng",
+      "variant": "security"
+    },
+    {
+      "from": "correlate",
+      "to": "incident_mitre",
+      "label": "hồ sơ",
+      "variant": "security"
+    },
+    {
+      "from": "incident_mitre",
+      "to": "rag",
+      "label": "technique ID",
+      "variant": "dashed"
+    },
+    {
+      "from": "rag",
+      "to": "copilot_evaluate",
+      "label": "chunk có trích dẫn",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "slate",
+      "title": "Giai đoạn 0–1 • Event",
+      "items": [
+        "Nút học: 30 phút; kết quả — ‘Tôi giải thích được Event, Alert và Incident’; không học quá sâu sản phẩm SIEM.",
+        "Chức năng: mô hình hóa fixture đầu vào an toàn; Đầu vào: ví dụ thô; Đầu ra: fixture RawEvent.",
+        "Kiến thức: SOC, vai trò SIEM/EDR, Event/Alert/Incident và log auth/process/network.",
+        "Cần học trước: đọc một event mỗi loại; Học sau — Mở rộng tương lai: API SIEM/EDR thật; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Giai đoạn 2 • Chuẩn hóa",
+      "items": [
+        "Nút học: 2 giờ; kết quả — ‘Tôi giải thích được trường cốt lõi, quan hệ tiến trình, hướng mạng và thứ tự’; không học quá sâu toàn bộ schema.",
+        "Chức năng: giữ nguyên ý nghĩa trong schema chung; Đầu vào: RawEvent; Đầu ra: NormalizedEvent.",
+        "Kiến thức: trường bảo mật, process tree, hướng mạng và timestamp.",
+        "Cần học trước: ngữ nghĩa trường; Học sau — Mở rộng tương lai: ECS/OCSF; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Giai đoạn 3 • Phát hiện",
+      "items": [
+        "Nút học: 2 giờ; kết quả — ‘Tôi giải thích được rule, threshold, IOC, FP và FN’; không học quá sâu ML.",
+        "Chức năng: quy tắc hành vi đáng ngờ mang tính xác định; Đầu vào: NormalizedEvent; Đầu ra: Detection/Alert.",
+        "Kiến thức: threshold, IOC so với TTP, FP/FN, brute force và PowerShell theo ngữ cảnh.",
+        "Cần học trước: hiệu chỉnh ca golden/benign; Học sau — Mở rộng tương lai: Sigma/YARA/ML; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Giai đoạn 4 • Tương quan",
+      "items": [
+        "Nút học: nửa ngày; kết quả — ‘Tôi giải thích và bảo vệ được liên kết bằng chứng’; không học quá sâu cơ sở dữ liệu đồ thị.",
+        "Chức năng: nối bằng chứng thành một case có khả năng liên quan; Đầu vào: event + detection; Đầu ra: nhóm tương quan/quyết định tạo-cập nhật.",
+        "Kiến thức: liên kết thời gian/thực thể/process/IOC và bằng chứng.",
+        "Cần học trước: giải thích điểm tương quan; Học sau — Mở rộng tương lai: đồ thị/mô hình xác suất; Độ sâu: Trung cấp."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Giai đoạn 5 • Incident",
+      "items": [
+        "Nút học: 1 giờ; kết quả — ‘Tôi giải thích được vòng đời, triage và severity’; không học quá sâu toàn bộ incident response.",
+        "Chức năng: biểu diễn một case có thể triage; Đầu vào: bằng chứng liên quan; Đầu ra: Incident + timeline.",
+        "Kiến thức: vòng đời, triage, severity so với confidence, fact so với hypothesis.",
+        "Cần học trước: giữ evidence ID; Học sau — Mở rộng tương lai: playbook IR đầy đủ; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Giai đoạn 6 • ATT&CK",
+      "items": [
+        "Nút học: 2 giờ; kết quả — ‘Tôi giải thích được tactic, technique, sub-technique và TTP’; không học thuộc ma trận.",
+        "Chức năng: ánh xạ hành vi có bằng chứng; Đầu vào: detection/hành vi; Đầu ra: technique ID + liên kết bằng chứng.",
+        "Kiến thức: tactic, technique, sub-technique và TTP.",
+        "Cần học trước: ánh xạ T1110/T1059.001 theo logic xác định; Học sau — Mở rộng tương lai: bao phủ rộng; Độ sâu: Nhập môn–Cơ bản."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Giai đoạn 7 • RAG",
+      "items": [
+        "Nút học: 1 giờ; kết quả — ‘Tôi kiểm tra được citation có hỗ trợ nhận định’; không học lại kiến thức RAG đã biết.",
+        "Chức năng: truy xuất hướng dẫn đáng tin cậy; Đầu vào: incident + technique ID/thực thể; Đầu ra: chunk có trích dẫn.",
+        "Kiến thức: đọc ATT&CK, nguồn tin cậy và truy vết.",
+        "Cần học trước: kiểm tra citation; Học sau — Mở rộng tương lai: hybrid retrieval; Độ sâu: Bảo mật nhập môn."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Giai đoạn 8 • Copilot",
+      "items": [
+        "Nút học: 2 giờ; kết quả — ‘Tôi phân biệt được evidence, finding và hypothesis’; không học quá sâu playbook nâng cao.",
+        "Chức năng: soạn báo cáo điều tra có căn cứ; Đầu vào: incident/evidence/timeline/mapping/chunk; Đầu ra: bản nháp có cấu trúc.",
+        "Kiến thức: câu hỏi SOC, evidence so với hypothesis và cách dùng IOC/TTP.",
+        "Cần học trước: ghi rõ mức độ không chắc chắn; Học sau — Mở rộng tương lai: SOC đa tác tử/khắc phục; Độ sâu: Bảo mật cơ bản."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Giai đoạn 9 • Đánh giá",
+      "items": [
+        "Nút học: nửa ngày; kết quả — ‘Tôi kiểm thử được kết quả mong đợi, benign và thiếu bằng chứng’; không học quá sâu observability production.",
+        "Chức năng: chứng minh độ chính xác xác định và đầu ra có căn cứ; Đầu vào: kịch bản golden, benign và thiếu evidence; Đầu ra: chỉ số/lỗi.",
+        "Kiến thức: FP/FN, truy vết bằng chứng và phát hiện nhận định thiếu căn cứ.",
+        "Cần học trước: định nghĩa kết quả mong đợi; Học sau — Mở rộng tương lai: telemetry production; Độ sâu: Cơ bản."
+      ]
+    }
+  ]
+}

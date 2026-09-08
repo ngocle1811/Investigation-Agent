@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Detection & Correlation Workflow — PROPOSED DETERMINISTIC CORE",
+    "output": "04-detection-correlation.workflow.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "views": [
+      {"id": "detection_path", "label": "Validate and detect", "focus": ["receive", "validate", "normalize", "rules", "suspicious"], "note": "Explicit validation and rules determine whether an event is suspicious."},
+      {"id": "correlation_path", "label": "Correlate and act", "focus": ["suspicious", "find_score", "existing", "update_path", "create_path"], "note": "Time/entity/process/IOC evidence drives the create-or-update decision."},
+      {"id": "no_alert_path", "label": "Benign path", "focus": ["suspicious", "store"], "note": "A non-suspicious event is stored without creating an alert or incident."}
+    ]
+  },
+  "lanes": [
+    {"id": "intake", "label": "Event intake"},
+    {"id": "detection", "label": "Deterministic detection"},
+    {"id": "correlation", "label": "Deterministic correlation"},
+    {"id": "incident", "label": "Existing incident outcome"},
+    {"id": "new_case", "label": "New incident outcome", "variant": "exception"}
+  ],
+  "phases": [
+    {"id": "prepare", "label": "Prepare trusted facts", "fromCol": 0, "toCol": 2},
+    {"id": "detect", "label": "Detect", "fromCol": 3, "toCol": 4, "variant": "security"},
+    {"id": "correlate_act", "label": "Correlate + incident action", "fromCol": 5, "toCol": 5, "variant": "emphasis"}
+  ],
+  "groups": [
+    {"id": "rule_gate", "label": "Rule gate", "lane": "detection", "fromCol": 3, "toCol": 4, "variant": "security"},
+    {"id": "case_gate", "label": "Evidence gate", "lane": "correlation", "fromCol": 4, "toCol": 5, "variant": "security"}
+  ],
+  "mainPath": ["receive", "validate", "normalize", "rules", "suspicious", "find_score", "existing", "update_path"],
+  "semanticChecks": {
+    "allowedRoots": ["receive"],
+    "allowedTerminals": ["store", "update_path", "create_path"],
+    "requiredEdges": [
+      {"from": "suspicious", "to": "store"},
+      {"from": "existing", "to": "update_path"},
+      {"from": "existing", "to": "create_path"}
+    ],
+    "requiredPaths": [
+      {"from": "receive", "to": "suspicious"},
+      {"from": "suspicious", "to": "update_path"},
+      {"from": "suspicious", "to": "create_path"}
+    ]
+  },
+  "nodes": [
+    {"id": "receive", "lane": "intake", "col": 0, "type": "external", "label": "Receive Event", "sublabel": "Event types", "tag": "Input: RawEvent", "width": 138},
+    {"id": "validate", "lane": "intake", "col": 1, "type": "security", "label": "Validate", "sublabel": "Required fields", "tag": "Output: accepted/rejected", "width": 138},
+    {"id": "normalize", "lane": "intake", "col": 2, "type": "backend", "label": "Normalize", "sublabel": "Field semantics", "tag": "Output: NormalizedEvent", "width": 138},
+    {"id": "rules", "lane": "detection", "col": 3, "type": "security", "label": "Run Detection Rules", "sublabel": "IOC + behavior + FP/FN", "tag": "DETERMINISTIC", "width": 138},
+    {"id": "suspicious", "lane": "detection", "col": 4, "type": "security", "label": "Suspicious?", "sublabel": "Rule threshold", "tag": "Decision", "width": 138},
+    {"id": "store", "lane": "detection", "col": 5, "type": "database", "label": "Store Event", "sublabel": "Evidence retention", "tag": "No alert", "width": 138},
+    {"id": "find_score", "lane": "correlation", "col": 4, "type": "security", "label": "Find Related + Score", "sublabel": "Time/entity/IOC links", "tag": "DETERMINISTIC CORE", "width": 150},
+    {"id": "existing", "lane": "correlation", "col": 5, "type": "security", "label": "Existing Incident?", "sublabel": "Alert vs Incident", "tag": "Decision", "width": 138},
+    {"id": "update_path", "lane": "incident", "col": 5, "type": "security", "label": "Update → Map → Trigger", "sublabel": "Evidence-backed ATT&CK", "tag": "Existing case • PROPOSED", "width": 150},
+    {"id": "create_path", "lane": "new_case", "col": 5, "type": "security", "label": "Create → Map → Trigger", "sublabel": "Evidence-backed ATT&CK", "tag": "New case • PROPOSED", "width": 150}
+  ],
+  "edges": [
+    {"from": "receive", "to": "validate", "label": "RawEvent"},
+    {"from": "validate", "to": "normalize", "label": "valid"},
+    {"from": "normalize", "to": "rules", "label": "NormalizedEvent", "variant": "security"},
+    {"from": "rules", "to": "suspicious", "label": "rule result", "variant": "security"},
+    {"from": "suspicious", "to": "store", "label": "No", "role": "branch", "variant": "default"},
+    {"from": "suspicious", "to": "find_score", "label": "Yes", "role": "main", "variant": "security"},
+    {"from": "find_score", "to": "existing", "label": "correlation score", "variant": "security"},
+    {"from": "existing", "to": "update_path", "label": "Yes", "variant": "security"},
+    {"from": "existing", "to": "create_path", "label": "No", "role": "branch", "variant": "emphasis"}
+  ],
+  "cards": [
+    {"dot": "slate", "title": "Receive + Validate", "items": ["What: accept a RawEvent and reject malformed input; Input: fixture event; Output: accepted/rejected event.", "Knowledge used: Event vs Alert vs Incident, log families, required security fields.", "Learn before: read basic auth/process/network events; Later — Future Extension: streaming ingestion; Depth: Basic."]},
+    {"dot": "cyan", "title": "Normalize", "items": ["What: preserve source facts in common semantics; Input: valid RawEvent; Output: NormalizedEvent.", "Knowledge used: user/host/IP/process/domain, process tree, network direction, timestamps.", "Learn before: field semantics; Later — Future Extension: ECS/OCSF; Depth: Basic."]},
+    {"dot": "rose", "title": "Run Rules + Suspicious Gate", "items": ["What: apply explicit thresholds/behavior logic; Input: NormalizedEvent; Output: Detection or no alert.", "Knowledge used: detection engineering, IOC vs behavior, FP/FN, brute force, contextual PowerShell.", "Learn before: tune golden and benign scenarios; Later — Future Extension: Sigma/ML; Depth: Basic."]},
+    {"dot": "rose", "title": "Find Related + Correlation Score", "items": ["What: retrieve nearby evidence and score shared user/host/IP/process/time/IOC links; Input: Detection + events; Output: scored related group.", "Knowledge used: temporal reasoning, entity/process relationships, evidence.", "Learn before: justify each score contribution; Later — Future Extension: graph/probabilistic correlation; Depth: Intermediate."]},
+    {"dot": "amber", "title": "Existing Incident Gate", "items": ["What: choose update or create; Input: correlated group; Output: incident action.", "Knowledge used: Alert vs Incident, lifecycle, evidence traceability, severity vs confidence.", "Learn before: explain when multiple alerts form one case; Later — Future Extension: formal triage queues; Depth: Basic."]},
+    {"dot": "violet", "title": "Update/Create → MITRE → Investigation", "items": ["What: persist evidence, apply deterministic evidence-to-technique mapping, then trigger investigation support; Input: incident action; Output: updated/new incident ready for retrieval and copilot.", "Knowledge used: incident timeline; tactic/technique/sub-technique/TTP; evidence-backed mapping.", "Learn before: map T1110/T1059.001 without an LLM; Later — Future Extension: broader ATT&CK coverage; Depth: Basic."]},
+    {"dot": "emerald", "title": "Hard Boundary", "items": ["No LLM decides Suspicious?, correlation score, incident membership, or ATT&CK mapping", "RAG/LLM begins only after deterministic incident facts exist", "Every unimplemented node is Proposed; advanced capabilities are Future Extension"]}
+  ]
+}

@@ -1,0 +1,6 @@
+retrieval:
+  k: 5
+  metrics: [recall_at_k, mrr]
+investigation:
+  unsupported_claim_rate_target: 0.05
+random_seed: 42

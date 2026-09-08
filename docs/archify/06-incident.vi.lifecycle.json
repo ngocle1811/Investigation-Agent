@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Vòng đời Incident — MVP ĐỀ XUẤT",
+    "output": "06-incident.vi.lifecycle.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [
+      980,
+      760
+    ],
+    "views": [
+      {
+        "id": "main_lifecycle",
+        "label": "Luồng vòng đời chính",
+        "focus": [
+          "candidate",
+          "open",
+          "investigating",
+          "triaged",
+          "resolved",
+          "closed"
+        ],
+        "note": "Theo dõi candidate đã tương quan qua bước chuyên viên xem xét đến hồ sơ hoàn tất."
+      },
+      {
+        "id": "evidence_recovery",
+        "label": "Không đủ bằng chứng",
+        "focus": [
+          "investigating",
+          "needs_more_evidence"
+        ],
+        "note": "Giả thuyết thiếu căn cứ chờ thêm evidence và quay lại điều tra khi có evidence mới."
+      },
+      {
+        "id": "benign_exit",
+        "label": "Nhánh false positive",
+        "focus": [
+          "triaged",
+          "false_positive"
+        ],
+        "note": "Triage có thể kết luận alert là benign mà không viết lại bằng chứng nguồn."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Các giai đoạn Incident"
+    },
+    {
+      "id": "recovery",
+      "label": "Bổ sung bằng chứng"
+    },
+    {
+      "id": "terminal",
+      "label": "Kết quả cuối"
+    }
+  ],
+  "states": [
+    {
+      "id": "candidate",
+      "type": "start",
+      "label": "Candidate",
+      "sublabel": "Có thể liên quan",
+      "tag": "ĐỀ XUẤT",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "width": 112
+    },
+    {
+      "id": "open",
+      "type": "active",
+      "label": "Open",
+      "sublabel": "Case đã tiếp nhận",
+      "tag": "ĐỀ XUẤT",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "width": 112
+    },
+    {
+      "id": "investigating",
+      "type": "active",
+      "label": "Investigating",
+      "sublabel": "Bảo mật: xem xét bằng chứng",
+      "tag": "ĐỀ XUẤT",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "width": 124
+    },
+    {
+      "id": "triaged",
+      "type": "decision",
+      "label": "Triaged",
+      "sublabel": "Bảo mật: đã đặt mức ưu tiên",
+      "tag": "ĐỀ XUẤT",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "width": 112
+    },
+    {
+      "id": "resolved",
+      "type": "success",
+      "label": "Resolved",
+      "sublabel": "Bảo mật: xử lý hoàn tất",
+      "tag": "ĐỀ XUẤT",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "width": 112
+    },
+    {
+      "id": "needs_more_evidence",
+      "type": "failure",
+      "label": "Cần thêm bằng chứng",
+      "sublabel": "Chưa đủ bằng chứng",
+      "tag": "CÓ THỂ KHÔI PHỤC • ĐỀ XUẤT",
+      "lane": "recovery",
+      "col": 0,
+      "width": 128
+    },
+    {
+      "id": "false_positive",
+      "type": "neutral",
+      "label": "False Positive",
+      "sublabel": "Bảo mật: kết luận benign",
+      "tag": "ĐỀ XUẤT",
+      "lane": "terminal",
+      "col": 1,
+      "width": 120
+    },
+    {
+      "id": "closed",
+      "type": "success",
+      "label": "Closed",
+      "sublabel": "Bảo mật: hồ sơ hoàn tất",
+      "tag": "ĐỀ XUẤT",
+      "lane": "terminal",
+      "col": 2,
+      "step": "06",
+      "width": 112
+    }
+  ],
+  "transitions": [
+    {
+      "id": "candidate_open",
+      "from": "candidate",
+      "to": "open",
+      "label": "đưa vào xử lý",
+      "variant": "security",
+      "labelDy": 55
+    },
+    {
+      "id": "open_investigating",
+      "from": "open",
+      "to": "investigating",
+      "label": "bắt đầu",
+      "variant": "emphasis",
+      "labelDy": -25
+    },
+    {
+      "id": "investigating_triaged",
+      "from": "investigating",
+      "to": "triaged",
+      "label": "triage",
+      "variant": "security",
+      "labelDy": 55
+    },
+    {
+      "id": "triaged_resolved",
+      "from": "triaged",
+      "to": "resolved",
+      "label": "giải quyết",
+      "variant": "emphasis",
+      "labelDy": 55
+    },
+    {
+      "id": "resolved_closed",
+      "from": "resolved",
+      "to": "closed",
+      "label": "đóng",
+      "variant": "emphasis",
+      "labelAt": [
+        710,
+        230
+      ]
+    },
+    {
+      "id": "investigating_needs_evidence",
+      "from": "investigating",
+      "to": "needs_more_evidence",
+      "label": "cần bằng chứng",
+      "variant": "security",
+      "labelAt": [
+        455,
+        230
+      ]
+    },
+    {
+      "id": "evidence_returns",
+      "from": "needs_more_evidence",
+      "to": "investigating",
+      "label": "đã thêm bằng chứng",
+      "variant": "dashed",
+      "route": "left-channel",
+      "channelX": 320
+    },
+    {
+      "id": "triaged_false_positive",
+      "from": "triaged",
+      "to": "false_positive",
+      "label": "benign",
+      "variant": "default",
+      "labelAt": [
+        556,
+        230
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Candidate → Open",
+      "items": [
+        "Chức năng: đưa nhóm tương quan thành case được chấp nhận; Đầu vào: nhóm bằng chứng có điểm; Đầu ra: Incident ở trạng thái Open.",
+        "Kiến thức: Detection so với Correlation và Alert so với Incident.",
+        "Cần học trước: giải thích ngưỡng; Học sau — Mở rộng tương lai: hàng đợi triage; Độ sâu: Cơ bản–Trung cấp."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Investigating → Triaged",
+      "items": [
+        "Chức năng: xem xét bằng chứng theo thứ tự và đánh giá ưu tiên; Đầu vào: timeline incident; Đầu ra: finding/severity sau triage.",
+        "Kiến thức: evidence so với finding và hypothesis, timeline, severity so với confidence.",
+        "Cần học trước: trích dẫn evidence cho từng finding; Học sau — Mở rộng tương lai: playbook chính thức; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Resolved → Closed",
+      "items": [
+        "Chức năng: ghi kết quả và hoàn tất case có thể kiểm tra; Đầu vào: incident đã triage và kết quả xử lý; Đầu ra: hồ sơ Closed bất biến.",
+        "Kiến thức: truy vết bằng chứng và báo cáo dễ đọc cho chuyên viên.",
+        "Cần học trước: giữ nguyên fact và citation; Học sau — Mở rộng tương lai: tích hợp containment/recovery; Độ sâu: Nhập môn–Cơ bản."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Các kết quả thay thế rõ ràng",
+      "items": [
+        "Needs More Evidence có thể phục hồi và chỉ quay lại Investigating khi có evidence mới",
+        "False Positive nghĩa là đã có bằng chứng cho giải thích benign; raw event không bị xóa",
+        "Reopen incident là Mở rộng tương lai, không thuộc state machine của MVP"
+      ]
+    }
+  ]
+}

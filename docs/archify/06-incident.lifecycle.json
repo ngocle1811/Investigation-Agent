@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Incident Lifecycle — PROPOSED MVP",
+    "output": "06-incident.lifecycle.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [980, 760],
+    "views": [
+      {"id": "main_lifecycle", "label": "Main incident rail", "focus": ["candidate", "open", "investigating", "triaged", "resolved", "closed"], "note": "Follow a correlated candidate through analyst review to a finalized case."},
+      {"id": "evidence_recovery", "label": "Insufficient evidence", "focus": ["investigating", "needs_more_evidence"], "note": "An unsupported hypothesis waits for more evidence and returns to investigation when evidence arrives."},
+      {"id": "benign_exit", "label": "False-positive exit", "focus": ["triaged", "false_positive"], "note": "Triage may conclude that the alert is benign without rewriting the source evidence."}
+    ]
+  },
+  "lanes": [
+    {"id": "main", "label": "Incident phases"},
+    {"id": "recovery", "label": "Evidence recovery"},
+    {"id": "terminal", "label": "Terminal outcomes"}
+  ],
+  "states": [
+    {"id": "candidate", "type": "start", "label": "Candidate", "sublabel": "Security: possible activity", "tag": "PROPOSED", "lane": "main", "col": 0, "step": "01", "width": 112},
+    {"id": "open", "type": "active", "label": "Open", "sublabel": "Security: accepted case", "tag": "PROPOSED", "lane": "main", "col": 1, "step": "02", "width": 112},
+    {"id": "investigating", "type": "active", "label": "Investigating", "sublabel": "Security: evidence review", "tag": "PROPOSED", "lane": "main", "col": 2, "step": "03", "width": 124},
+    {"id": "triaged", "type": "decision", "label": "Triaged", "sublabel": "Security: priority set", "tag": "PROPOSED", "lane": "main", "col": 3, "step": "04", "width": 112},
+    {"id": "resolved", "type": "success", "label": "Resolved", "sublabel": "Security: response done", "tag": "PROPOSED", "lane": "main", "col": 4, "step": "05", "width": 112},
+    {"id": "needs_more_evidence", "type": "failure", "label": "Needs Evidence", "sublabel": "Security: claim unproven", "tag": "RECOVERABLE • PROPOSED", "lane": "recovery", "col": 0, "width": 128},
+    {"id": "false_positive", "type": "neutral", "label": "False Positive", "sublabel": "Security: benign finding", "tag": "PROPOSED", "lane": "terminal", "col": 1, "width": 120},
+    {"id": "closed", "type": "success", "label": "Closed", "sublabel": "Security: record final", "tag": "PROPOSED", "lane": "terminal", "col": 2, "step": "06", "width": 112}
+  ],
+  "transitions": [
+    {"id": "candidate_open", "from": "candidate", "to": "open", "label": "promote", "variant": "security", "labelDy": 55},
+    {"id": "open_investigating", "from": "open", "to": "investigating", "label": "start", "variant": "emphasis"},
+    {"id": "investigating_triaged", "from": "investigating", "to": "triaged", "label": "triage", "variant": "security", "labelDy": 55},
+    {"id": "triaged_resolved", "from": "triaged", "to": "resolved", "label": "resolve", "variant": "emphasis", "labelDy": 55},
+    {"id": "resolved_closed", "from": "resolved", "to": "closed", "label": "close", "variant": "emphasis", "labelAt": [710, 230]},
+    {"id": "investigating_needs_evidence", "from": "investigating", "to": "needs_more_evidence", "label": "need evidence", "variant": "security", "labelAt": [455, 230]},
+    {"id": "evidence_returns", "from": "needs_more_evidence", "to": "investigating", "label": "evidence added", "variant": "dashed", "route": "left-channel", "channelX": 320},
+    {"id": "triaged_false_positive", "from": "triaged", "to": "false_positive", "label": "benign", "variant": "default", "labelAt": [556, 230]}
+  ],
+  "cards": [
+    {"dot": "cyan", "title": "Candidate → Open", "items": ["What: promote a correlated group into an accepted case; Input: scored evidence group; Output: open Incident.", "Knowledge: Detection vs Correlation and Alert vs Incident.", "Learn before: justify the threshold; Later — Future Extension: triage queues; Depth: Basic–Intermediate."]},
+    {"dot": "rose", "title": "Investigating → Triaged", "items": ["What: review ordered evidence and assess priority; Input: incident timeline; Output: triage finding/severity.", "Knowledge: evidence vs finding vs hypothesis, timeline, severity vs confidence.", "Learn before: cite evidence for each finding; Later — Future Extension: formal playbooks; Depth: Basic."]},
+    {"dot": "emerald", "title": "Resolved → Closed", "items": ["What: record the outcome and finalize the reviewable case; Input: triaged incident and resolution; Output: immutable closed record.", "Knowledge: evidence traceability and analyst-friendly reporting.", "Learn before: preserve facts and citations; Later — Future Extension: containment/recovery integrations; Depth: Beginner–Basic."]},
+    {"dot": "amber", "title": "Explicit Alternate Outcomes", "items": ["Needs More Evidence is recoverable and returns to Investigating only when new evidence arrives", "False Positive means a benign explanation was evidenced; raw events are not deleted", "Reopened incidents are a Future Extension, not part of the MVP state machine"]}
+  ]
+}

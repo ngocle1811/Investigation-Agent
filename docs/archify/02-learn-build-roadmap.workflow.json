@@ -1,0 +1,61 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Learn → Build Roadmap — PROPOSED MVP",
+    "output": "02-learn-build-roadmap.workflow.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "views": [
+      {"id": "security-foundations", "label": "Foundations to correlation", "focus": ["events_normalize", "detect", "correlate"], "note": "Acquire only the security concepts required to build the deterministic core."},
+      {"id": "security-understanding", "label": "Incident and ATT&CK", "focus": ["correlate", "incident_mitre"], "note": "Turn evidence into a case, then attach evidence-backed ATT&CK meaning."},
+      {"id": "ai-support", "label": "Grounded AI support", "focus": ["rag", "copilot_evaluate"], "note": "Reuse AI skills only after deterministic security facts exist."}
+    ]
+  },
+  "lanes": [
+    {"id": "objective_a", "label": "Learn → build objective A"},
+    {"id": "objective_b", "label": "Learn → build objective B"}
+  ],
+  "phases": [
+    {"id": "foundation", "label": "Data foundations + detection", "fromCol": 0, "toCol": 0},
+    {"id": "deterministic", "label": "Correlation + security understanding", "fromCol": 1, "toCol": 1, "variant": "security"},
+    {"id": "ai_support", "label": "Grounded AI support + evaluation", "fromCol": 2, "toCol": 2, "variant": "dashed"}
+  ],
+  "groups": [],
+  "mainPath": ["events_normalize", "detect", "correlate", "incident_mitre", "rag", "copilot_evaluate"],
+  "semanticChecks": {
+    "allowedRoots": ["events_normalize"],
+    "allowedTerminals": ["copilot_evaluate"],
+    "requiredPaths": [
+      {"from": "events_normalize", "to": "correlate"},
+      {"from": "correlate", "to": "incident_mitre"},
+      {"from": "incident_mitre", "to": "copilot_evaluate"}
+    ]
+  },
+  "nodes": [
+    {"id": "events_normalize", "lane": "objective_a", "col": 0, "type": "backend", "label": "Events → Normalizer", "sublabel": "SOC + fields → fixtures + schema", "tag": "30m + 2h • PROPOSED", "width": 164},
+    {"id": "detect", "lane": "objective_b", "col": 0, "type": "security", "label": "Detection Rules", "sublabel": "IOC / behavior / FP-FN → rules", "tag": "2h • DETERMINISTIC", "width": 164},
+    {"id": "correlate", "lane": "objective_a", "col": 1, "type": "security", "label": "Correlation Engine", "sublabel": "Evidence links → scoring", "tag": "Half day • CORE", "width": 164},
+    {"id": "incident_mitre", "lane": "objective_b", "col": 1, "type": "security", "label": "Incident → ATT&CK", "sublabel": "Triage + TTP → case + mapper", "tag": "3h • DETERMINISTIC", "width": 164},
+    {"id": "rag", "lane": "objective_a", "col": 2, "type": "database", "label": "Security RAG", "sublabel": "Citations → retrieval", "tag": "1h • AI SUPPORT", "width": 164},
+    {"id": "copilot_evaluate", "lane": "objective_b", "col": 2, "type": "backend", "label": "Copilot → Evaluation", "sublabel": "Investigation → report + tests", "tag": "2h + half day • AI SUPPORT", "width": 164}
+  ],
+  "edges": [
+    {"from": "events_normalize", "to": "detect", "variant": "security"},
+    {"from": "detect", "to": "correlate", "label": "alerts + evidence", "variant": "security"},
+    {"from": "correlate", "to": "incident_mitre", "label": "case", "variant": "security"},
+    {"from": "incident_mitre", "to": "rag", "label": "technique IDs", "variant": "dashed"},
+    {"from": "rag", "to": "copilot_evaluate", "label": "cited chunks", "variant": "dashed"}
+  ],
+  "cards": [
+    {"dot": "slate", "title": "Phase 0–1 • Events", "items": ["Learning node: 30 min; outcome — ‘I can explain Event vs Alert vs Incident’; do not overlearn SIEM products.", "What: model safe fixture inputs; Input: raw examples; Output: RawEvent fixtures.", "Knowledge: SOC, SIEM/EDR roles, Event vs Alert vs Incident, auth/process/network logs.", "Learn before: read one event of each type; Later — Future Extension: real SIEM/EDR APIs; Depth: Basic."]},
+    {"dot": "cyan", "title": "Phase 2 • Normalizer", "items": ["Learning node: 2 h; outcome — ‘I can explain core fields, process parentage, network direction, and ordering’; do not overlearn full schemas.", "What: preserve meaning in a common schema; Input: RawEvent; Output: NormalizedEvent.", "Knowledge: security fields, process trees, network direction, timestamps.", "Learn before: field semantics; Later — Future Extension: ECS/OCSF; Depth: Basic."]},
+    {"dot": "rose", "title": "Phase 3 • Detection", "items": ["Learning node: 2 h; outcome — ‘I can explain rule, threshold, IOC, FP, and FN’; do not overlearn ML.", "What: deterministic suspicious-behavior rules; Input: NormalizedEvent; Output: Detection/Alert.", "Knowledge: thresholds, IOC vs TTP, FP/FN, brute force, contextual PowerShell.", "Learn before: tune golden/benign cases; Later — Future Extension: Sigma/YARA/ML; Depth: Basic."]},
+    {"dot": "rose", "title": "Phase 4 • Correlation", "items": ["Learning node: half day; outcome — ‘I can explain and justify evidence links’; do not overlearn graph databases.", "What: connect evidence into a likely case; Input: events + detections; Output: correlated group/create-update decision.", "Knowledge: time/entity/process/IOC links and evidence.", "Learn before: justify a correlation score; Later — Future Extension: graphs/probabilistic models; Depth: Intermediate."]},
+    {"dot": "amber", "title": "Phase 5 • Incident", "items": ["Learning node: 1 h; outcome — ‘I can explain lifecycle, triage, and severity’; do not overlearn full incident response.", "What: represent a triageable case; Input: related evidence; Output: Incident + timeline.", "Knowledge: lifecycle, triage, severity vs confidence, fact vs hypothesis.", "Learn before: preserve evidence IDs; Later — Future Extension: full IR playbooks; Depth: Basic."]},
+    {"dot": "amber", "title": "Phase 6 • ATT&CK", "items": ["Learning node: 2 h; outcome — ‘I can explain tactic, technique, sub-technique, and TTP’; do not memorize the matrix.", "What: map evidenced behavior; Input: detections/behavior; Output: technique IDs + evidence links.", "Knowledge: tactic, technique, sub-technique, TTP.", "Learn before: map T1110/T1059.001 deterministically; Later — Future Extension: broad coverage; Depth: Beginner–Basic."]},
+    {"dot": "violet", "title": "Phase 7 • RAG", "items": ["Learning node: 1 h; outcome — ‘I can verify that a citation supports a claim’; do not rebuild known RAG fundamentals.", "What: retrieve trusted guidance; Input: incident + technique IDs/entities; Output: cited chunks.", "Knowledge: ATT&CK reading, trusted sources, traceability.", "Learn before: verify citation support; Later — Future Extension: hybrid retrieval; Depth: Security Beginner."]},
+    {"dot": "violet", "title": "Phase 8 • Copilot", "items": ["Learning node: 2 h; outcome — ‘I can separate evidence, finding, and hypothesis’; do not overlearn advanced playbooks.", "What: draft a grounded investigation report; Input: incident/evidence/timeline/mappings/chunks; Output: structured draft.", "Knowledge: SOC questions, evidence vs hypothesis, IOC/TTP use.", "Learn before: label uncertainty; Later — Future Extension: multi-agent SOC/remediation; Depth: Security Basic."]},
+    {"dot": "emerald", "title": "Phase 9 • Evaluation", "items": ["Learning node: half day; outcome — ‘I can test expected, benign, and insufficient-evidence outcomes’; do not overlearn production observability.", "What: prove deterministic accuracy and grounded output; Input: golden, benign, and missing-evidence scenarios; Output: metrics/failures.", "Knowledge: FP/FN, evidence traceability, unsupported-claim detection.", "Learn before: define expected outcomes; Later — Future Extension: production telemetry; Depth: Basic."]}
+  ]
+}

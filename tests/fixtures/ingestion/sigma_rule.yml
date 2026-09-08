@@ -1,0 +1,20 @@
+title: Suspicious PowerShell Encoded Command Patterns
+id: b9d9cc83-380b-4ba3-8d8f-60c0e7e2930c
+status: test
+description: Detects PowerShell with encoded command markers.
+date: 2022-05-24
+modified: 2023-01-05
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\powershell.exe'
+    CommandLine|contains: ' -enc '
+  condition: selection
+falsepositives:
+  - Administrative scripts that legitimately use encoded input.
+level: high

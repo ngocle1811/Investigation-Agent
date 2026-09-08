@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Trình tự điều tra có căn cứ — MVP ĐỀ XUẤT",
+    "output": "05-investigation.vi.sequence.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      1000
+    ],
+    "views": [
+      {
+        "id": "security_reasoning",
+        "label": "Suy luận bảo mật",
+        "focus": [
+          "incident_service",
+          "event_store",
+          "mitre_mapper",
+          "validator"
+        ],
+        "note": "Chọn bằng chứng, ánh xạ ATT&CK và kiểm tra nhận định đều mang tính xác định."
+      },
+      {
+        "id": "rag_reasoning",
+        "label": "Truy xuất RAG",
+        "focus": [
+          "incident_service",
+          "retriever",
+          "vector_store"
+        ],
+        "note": "Retrieval trả về tri thức bảo mật có trích dẫn theo dữ kiện incident và technique ID."
+      },
+      {
+        "id": "llm_reasoning",
+        "label": "Tổng hợp bằng LLM",
+        "focus": [
+          "incident_service",
+          "llm_copilot",
+          "validator",
+          "report_store"
+        ],
+        "note": "LLM soạn phân tích có cấu trúc; validation xác định kiểm soát việc lưu trữ."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "trigger_api",
+      "type": "external",
+      "label": "Trigger/API",
+      "sublabel": "yêu cầu"
+    },
+    {
+      "id": "incident_service",
+      "type": "backend",
+      "label": "Incident Svc",
+      "sublabel": "điều phối"
+    },
+    {
+      "id": "event_store",
+      "type": "database",
+      "label": "Kho sự kiện",
+      "sublabel": "bằng chứng"
+    },
+    {
+      "id": "mitre_mapper",
+      "type": "security",
+      "label": "MITRE Mapper",
+      "sublabel": "quy tắc"
+    },
+    {
+      "id": "retriever",
+      "type": "backend",
+      "label": "Bộ truy xuất",
+      "sublabel": "truy vấn"
+    },
+    {
+      "id": "vector_store",
+      "type": "database",
+      "label": "Vector Store",
+      "sublabel": "chunk"
+    },
+    {
+      "id": "llm_copilot",
+      "type": "backend",
+      "label": "LLM Copilot",
+      "sublabel": "tổng hợp"
+    },
+    {
+      "id": "validator",
+      "type": "security",
+      "label": "Bộ kiểm định",
+      "sublabel": "cổng nhận định"
+    },
+    {
+      "id": "report_store",
+      "type": "database",
+      "label": "Kho báo cáo",
+      "sublabel": "báo cáo"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 330,
+      "label": "Nạp dữ kiện incident xác định"
+    },
+    {
+      "from": 350,
+      "to": 520,
+      "label": "Truy xuất tri thức bảo mật có trích dẫn"
+    },
+    {
+      "from": 540,
+      "to": 720,
+      "label": "Tổng hợp và kiểm định"
+    },
+    {
+      "from": 735,
+      "to": 820,
+      "label": "Lưu và trả kết quả"
+    }
+  ],
+  "messages": [
+    {
+      "id": "investigate",
+      "from": "trigger_api",
+      "to": "incident_service",
+      "y": 180,
+      "label": "investigate(incident_id)",
+      "variant": "emphasis",
+      "note": "Đầu vào: mã định danh incident"
+    },
+    {
+      "id": "load_incident_evidence",
+      "from": "incident_service",
+      "to": "event_store",
+      "y": 225,
+      "label": "nạp incident + evidence ID",
+      "variant": "security",
+      "note": "Tra cứu xác định"
+    },
+    {
+      "id": "return_evidence",
+      "from": "event_store",
+      "to": "incident_service",
+      "y": 270,
+      "label": "incident + bằng chứng có thứ tự",
+      "variant": "return",
+      "note": "Dữ kiện nguồn và timeline"
+    },
+    {
+      "id": "map_mitre",
+      "from": "incident_service",
+      "to": "mitre_mapper",
+      "y": 315,
+      "label": "ánh xạ hành vi quan sát được",
+      "variant": "security",
+      "note": "Suy luận bảo mật: quy tắc evidence-to-technique"
+    },
+    {
+      "id": "return_mitre",
+      "from": "mitre_mapper",
+      "to": "incident_service",
+      "y": 355,
+      "label": "technique ID + liên kết bằng chứng",
+      "variant": "return",
+      "note": "Không để LLM đoán từ raw log"
+    },
+    {
+      "id": "retrieve",
+      "from": "incident_service",
+      "to": "retriever",
+      "y": 400,
+      "label": "retrieve(technique, thực thể)",
+      "variant": "dashed",
+      "note": "Truy vấn có căn cứ"
+    },
+    {
+      "id": "vector_search",
+      "from": "retriever",
+      "to": "vector_store",
+      "y": 445,
+      "label": "tìm kiếm kèm bộ lọc metadata",
+      "variant": "dashed",
+      "note": "technique_id, source, version, reference"
+    },
+    {
+      "id": "return_chunks",
+      "from": "vector_store",
+      "to": "retriever",
+      "y": 485,
+      "label": "chunk có trích dẫn đã xếp hạng",
+      "variant": "return",
+      "note": "Tri thức, không phải detection"
+    },
+    {
+      "id": "return_context",
+      "from": "retriever",
+      "to": "incident_service",
+      "y": 525,
+      "label": "ngữ cảnh truy xuất + citation",
+      "variant": "return"
+    },
+    {
+      "id": "generate",
+      "from": "incident_service",
+      "to": "llm_copilot",
+      "y": 575,
+      "label": "prompt có căn cứ + hợp đồng evidence",
+      "variant": "dashed",
+      "note": "Suy luận LLM chỉ diễn ra tại đây"
+    },
+    {
+      "id": "return_draft",
+      "from": "llm_copilot",
+      "to": "incident_service",
+      "y": 620,
+      "label": "bản nháp báo cáo có cấu trúc",
+      "variant": "return",
+      "note": "Fact, hypothesis, confidence và bước tiếp theo"
+    },
+    {
+      "id": "validate_draft",
+      "from": "incident_service",
+      "to": "validator",
+      "y": 665,
+      "label": "kiểm tra schema + nhận định có căn cứ",
+      "variant": "security",
+      "note": "Validation xác định diễn ra tại đây"
+    },
+    {
+      "id": "return_valid",
+      "from": "validator",
+      "to": "incident_service",
+      "y": 710,
+      "label": "báo cáo hợp lệ hoặc lỗi rõ ràng",
+      "variant": "return",
+      "note": "Từ chối event/IOC/technique/root cause bị bịa"
+    },
+    {
+      "id": "save_report",
+      "from": "incident_service",
+      "to": "report_store",
+      "y": 748,
+      "label": "lưu báo cáo đã kiểm định",
+      "variant": "emphasis"
+    },
+    {
+      "id": "save_ack",
+      "from": "report_store",
+      "to": "incident_service",
+      "y": 782,
+      "label": "report_id",
+      "variant": "return"
+    },
+    {
+      "id": "return_report",
+      "from": "incident_service",
+      "to": "trigger_api",
+      "y": 815,
+      "label": "báo cáo + citation",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "incident_service",
+      "from": 175,
+      "to": 820,
+      "type": "backend"
+    },
+    {
+      "participant": "event_store",
+      "from": 220,
+      "to": 275,
+      "type": "database"
+    },
+    {
+      "participant": "mitre_mapper",
+      "from": 310,
+      "to": 360,
+      "type": "security"
+    },
+    {
+      "participant": "retriever",
+      "from": 395,
+      "to": 530,
+      "type": "backend"
+    },
+    {
+      "participant": "vector_store",
+      "from": 440,
+      "to": 490,
+      "type": "database"
+    },
+    {
+      "participant": "llm_copilot",
+      "from": 570,
+      "to": 625,
+      "type": "backend"
+    },
+    {
+      "participant": "validator",
+      "from": 660,
+      "to": 715,
+      "type": "security"
+    },
+    {
+      "participant": "report_store",
+      "from": 743,
+      "to": 787,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Nơi diễn ra suy luận bảo mật",
+      "items": [
+        "Chức năng: chọn bằng chứng có thứ tự và ánh xạ hành vi quan sát được; Đầu vào: incident/evidence; Đầu ra: timeline + liên kết technique.",
+        "Kiến thức: evidence so với hypothesis, IOC/TTP, ánh xạ ATT&CK và giải thích severity.",
+        "Cần học trước: câu hỏi điều tra cơ bản và ánh xạ có bằng chứng; Học sau — Mở rộng tương lai: playbook đầy đủ; Độ sâu: Cơ bản."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Nơi diễn ra suy luận RAG / LLM",
+      "items": [
+        "Retriever: trả về chunk tin cậy, có phiên bản và trích dẫn từ dữ kiện incident xác định",
+        "LLM Copilot: tổng hợp tóm tắt, giả thuyết và bước tiếp theo từ evidence/ngữ cảnh được cung cấp",
+        "Cần học trước: truy vết citation và phân biệt fact/hypothesis; Học sau — Mở rộng tương lai: hybrid retrieval hoặc SOC đa tác tử; Độ sâu: Bảo mật cơ bản."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Nơi diễn ra validation xác định",
+      "items": [
+        "Validator kiểm tra cấu trúc, evidence ID, citation, technique ID được phép và ngôn ngữ thể hiện độ không chắc chắn",
+        "Event, IOC, technique hoặc root cause bị bịa sẽ chặn việc lưu",
+        "Đầu ra chỉ được lưu sau khi cổng xác định trả về hợp lệ"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Ranh giới giữa các lớp",
+      "items": [
+        "Detection, correlation, tạo incident và ánh xạ ATT&CK diễn ra trước trình tự này",
+        "RAG cung cấp tri thức; LLM cung cấp bản nháp",
+        "Báo cáo vẫn là Đề xuất cho đến khi việc triển khai ứng dụng được phê duyệt"
+      ]
+    }
+  ]
+}

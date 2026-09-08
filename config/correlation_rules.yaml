@@ -1,0 +1,4 @@
+defaults:
+  failed_logon_threshold: 5
+  failed_then_success_window_seconds: 300
+  process_network_window_seconds: 120

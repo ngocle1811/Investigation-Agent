@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Grounded Investigation Sequence — PROPOSED MVP",
+    "output": "05-investigation.sequence.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 1000],
+    "views": [
+      {"id": "security_reasoning", "label": "Security reasoning", "focus": ["incident_service", "event_store", "mitre_mapper", "validator"], "note": "Evidence selection, ATT&CK mapping, and claim checks are deterministic."},
+      {"id": "rag_reasoning", "label": "RAG retrieval", "focus": ["incident_service", "retriever", "vector_store"], "note": "Retrieval returns cited security knowledge keyed by incident facts and technique IDs."},
+      {"id": "llm_reasoning", "label": "LLM synthesis", "focus": ["incident_service", "llm_copilot", "validator", "report_store"], "note": "The LLM drafts structured analysis; deterministic validation gates persistence."}
+    ]
+  },
+  "participants": [
+    {"id": "trigger_api", "type": "external", "label": "Trigger/API", "sublabel": "request"},
+    {"id": "incident_service", "type": "backend", "label": "Incident Svc", "sublabel": "orchestrate"},
+    {"id": "event_store", "type": "database", "label": "Event Store", "sublabel": "evidence"},
+    {"id": "mitre_mapper", "type": "security", "label": "MITRE Mapper", "sublabel": "rules"},
+    {"id": "retriever", "type": "backend", "label": "Retriever", "sublabel": "query"},
+    {"id": "vector_store", "type": "database", "label": "Vector Store", "sublabel": "chunks"},
+    {"id": "llm_copilot", "type": "backend", "label": "LLM Copilot", "sublabel": "synthesis"},
+    {"id": "validator", "type": "security", "label": "Validator", "sublabel": "claim gate"},
+    {"id": "report_store", "type": "database", "label": "Report Store", "sublabel": "reports"}
+  ],
+  "segments": [
+    {"from": 150, "to": 330, "label": "Load deterministic incident facts"},
+    {"from": 350, "to": 520, "label": "Retrieve cited security knowledge"},
+    {"from": 540, "to": 720, "label": "Synthesize and validate"},
+    {"from": 735, "to": 820, "label": "Persist and return"}
+  ],
+  "messages": [
+    {"id": "investigate", "from": "trigger_api", "to": "incident_service", "y": 180, "label": "investigate(incident_id)", "variant": "emphasis", "note": "Input: incident identifier"},
+    {"id": "load_incident_evidence", "from": "incident_service", "to": "event_store", "y": 225, "label": "load incident + evidence IDs", "variant": "security", "note": "Deterministic lookup"},
+    {"id": "return_evidence", "from": "event_store", "to": "incident_service", "y": 270, "label": "incident + ordered evidence", "variant": "return", "note": "Source facts and timeline"},
+    {"id": "map_mitre", "from": "incident_service", "to": "mitre_mapper", "y": 315, "label": "map observed behaviors", "variant": "security", "note": "Security reasoning: evidence-to-technique rules"},
+    {"id": "return_mitre", "from": "mitre_mapper", "to": "incident_service", "y": 355, "label": "technique IDs + evidence links", "variant": "return", "note": "No raw-log LLM guessing"},
+    {"id": "retrieve", "from": "incident_service", "to": "retriever", "y": 400, "label": "retrieve(techniques, entities)", "variant": "dashed", "note": "Grounded query"},
+    {"id": "vector_search", "from": "retriever", "to": "vector_store", "y": 445, "label": "search with metadata filters", "variant": "dashed", "note": "technique_id, source, version, reference"},
+    {"id": "return_chunks", "from": "vector_store", "to": "retriever", "y": 485, "label": "ranked cited chunks", "variant": "return", "note": "Knowledge, not detections"},
+    {"id": "return_context", "from": "retriever", "to": "incident_service", "y": 525, "label": "retrieved context + citations", "variant": "return"},
+    {"id": "generate", "from": "incident_service", "to": "llm_copilot", "y": 575, "label": "grounded prompt + evidence contract", "variant": "dashed", "note": "LLM reasoning occurs only here"},
+    {"id": "return_draft", "from": "llm_copilot", "to": "incident_service", "y": 620, "label": "structured report draft", "variant": "return", "note": "Facts, hypotheses, confidence, next steps"},
+    {"id": "validate_draft", "from": "incident_service", "to": "validator", "y": 665, "label": "validate schema + supported claims", "variant": "security", "note": "Deterministic validation occurs here"},
+    {"id": "return_valid", "from": "validator", "to": "incident_service", "y": 710, "label": "valid report or explicit errors", "variant": "return", "note": "Reject invented events/IOCs/techniques/root cause"},
+    {"id": "save_report", "from": "incident_service", "to": "report_store", "y": 748, "label": "save validated report", "variant": "emphasis"},
+    {"id": "save_ack", "from": "report_store", "to": "incident_service", "y": 782, "label": "report_id", "variant": "return"},
+    {"id": "return_report", "from": "incident_service", "to": "trigger_api", "y": 815, "label": "report + citations", "variant": "return"}
+  ],
+  "activations": [
+    {"participant": "incident_service", "from": 175, "to": 820, "type": "backend"},
+    {"participant": "event_store", "from": 220, "to": 275, "type": "database"},
+    {"participant": "mitre_mapper", "from": 310, "to": 360, "type": "security"},
+    {"participant": "retriever", "from": 395, "to": 530, "type": "backend"},
+    {"participant": "vector_store", "from": 440, "to": 490, "type": "database"},
+    {"participant": "llm_copilot", "from": 570, "to": 625, "type": "backend"},
+    {"participant": "validator", "from": 660, "to": 715, "type": "security"},
+    {"participant": "report_store", "from": 743, "to": 787, "type": "database"}
+  ],
+  "cards": [
+    {"dot": "rose", "title": "Where Security Reasoning Occurs", "items": ["What: select ordered evidence and map observed behavior; Input: incident/evidence; Output: timeline + technique links.", "Knowledge: evidence vs hypothesis, IOC/TTP, ATT&CK mapping, severity explanation.", "Learn before: basic investigation questions and evidence-backed mapping; Later — Future Extension: full playbooks; Depth: Basic."]},
+    {"dot": "violet", "title": "Where RAG / LLM Reasoning Occurs", "items": ["Retriever: returns trusted, versioned, cited chunks from deterministic incident facts", "LLM Copilot: synthesizes summary, hypotheses, and next steps from supplied evidence/context", "Learn before: citation traceability and fact/hypothesis separation; Later — Future Extension: hybrid retrieval or multi-agent SOC; Depth: Security Basic."]},
+    {"dot": "amber", "title": "Where Deterministic Validation Occurs", "items": ["Validator checks structure, evidence IDs, citations, allowed technique IDs, and uncertainty language", "Invented events, IOCs, techniques, or unsupported root cause block persistence", "Output is saved only after the deterministic gate returns valid"]},
+    {"dot": "emerald", "title": "Layer Boundary", "items": ["Detection, correlation, incident creation, and ATT&CK mapping happen before this sequence", "RAG provides knowledge; the LLM provides a draft", "The report remains Proposed until application implementation is approved"]}
+  ]
+}
