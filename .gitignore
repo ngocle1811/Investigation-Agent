@@ -22,3 +22,4 @@ data/models/**/*
 !data/models/**/.gitkeep
 artifacts/eval/*
 !artifacts/eval/.gitkeep
+!artifacts/eval/investigation_demo_gemini.json

@@ -94,13 +94,94 @@
   the old R007 placeholder to R008, and B02 now explicitly expects its permitted low-level R003
   match. These are semantic corrections, not metric-driven label changes.
 
-## Checkpoints 5-11
+## Checkpoint 5 - Dense Retrieval Baseline
+
+- [x] Add a replaceable retriever protocol and normalized, flattened dense retrieval results with
+  ranks, scores, source metadata, original content, and contextualized content.
+- [x] Preserve exact metadata filters for source, source type, Event ID, MITRE technique ID, and
+  Sigma rule ID; add conservative identifier-hint parsing with explicit caller filters winning.
+- [x] Add separate parent lookup and stable `K1`-style citation mapping without returning parent
+  chunks in ordinary search results.
+- [x] Curate and lock 50 golden queries before the first evaluation: 15 Windows Event, 10 Sysmon,
+  15 MITRE ATT&CK, and 10 Sigma queries across five query types.
+- [x] Validate unique query IDs, all expected chunks/documents/sources, non-parent targets, and
+  explicit Event/MITRE/Sigma identifier references before evaluation.
+- [x] Implement binary Recall@1/3/5 and MRR, source and query-type slices, per-query results,
+  categorized failures, and mean/P50/P95 steady-state latency.
+- [x] Add readable search and evaluation CLIs plus deterministic JSON and CSV report writers.
+- [x] Evaluate all 50 queries against 97 retrievable chunks using dense FastEmbed retrieval only.
+- [x] Achieve Recall@1 0.6800, Recall@3 0.9000, Recall@5 0.9400, and MRR 0.7867, exceeding the
+  planned Recall@5 acceptance target of 0.75.
+- [x] Record warm-start latency of 41.778 ms mean, 39.320 ms P50, and 68.139 ms P95.
+- [x] Preserve all three top-5 misses as baseline evidence: two correct-document/wrong-section
+  Windows 4625 misses and one semantic Sysmon Event 22 section miss.
+- [x] Pass 59 total tests (7 new retrieval-baseline tests), `ruff check .`, and formatting checks;
+  verify search, parent lookup, filters, and citations against the live Qdrant corpus.
+
+### Baseline breakdown by source
+
+| Source type | Queries | Recall@1 | Recall@3 | Recall@5 | MRR |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| MITRE ATT&CK | 15 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| Sigma | 10 | 0.9000 | 1.0000 | 1.0000 | 0.9333 |
+| Sysmon | 10 | 0.7000 | 0.9000 | 0.9000 | 0.7833 |
+| Windows Event | 15 | 0.2000 | 0.7333 | 0.8667 | 0.4778 |
+
+### Baseline breakdown by query type
+
+| Query type | Queries | Recall@1 | Recall@3 | Recall@5 | MRR |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Description | 9 | 0.6667 | 1.0000 | 1.0000 | 0.8333 |
+| Exact identifier | 15 | 0.7333 | 0.8667 | 1.0000 | 0.8222 |
+| Natural language | 9 | 0.6667 | 0.8889 | 0.8889 | 0.7593 |
+| Semantic | 9 | 0.7778 | 1.0000 | 1.0000 | 0.8704 |
+| Vocabulary mismatch | 8 | 0.5000 | 0.7500 | 0.7500 | 0.6042 |
+
+## Checkpoints 6-11
 
 - [ ] Not started.
 
+## Grounded Investigation Vertical Slice - Priority After Checkpoint 5
+
+- [x] Reuse the Checkpoint 4 `InvestigationCase`, `RuleMatch`, and `CandidateBehavior` models rather
+  than creating a parallel detection pipeline.
+- [x] Assemble only the rule matches and event IDs referenced by the selected candidate behavior;
+  exclude synthetic ground truth, unrelated noise, labels, and unrestricted raw event payloads.
+- [x] Generate deterministic retrieval queries from behavior type, configured rule descriptions,
+  observed telemetry types, security concepts, and rule-owned MITRE mappings.
+- [x] Reuse dense Checkpoint 5 retrieval with configurable primary top-k and small exact
+  metadata-aware technique lookups; add no BM25, RRF, or reranking.
+- [x] Preserve retrieval rank, score, chunk/document IDs, source, title, section, URL, text, and
+  metadata in the bounded investigation context.
+- [x] Add a strict provider-independent `InvestigationReport` with timeline, fact/inference
+  findings, suspicious reasons, MITRE mappings, recommended investigation actions, and limitations.
+- [x] Add a dedicated system prompt with visibly separated CandidateBehavior, incident-evidence,
+  and security-knowledge blocks.
+- [x] Add a structured LLM protocol, deterministic offline mock, optional OpenAI Responses API,
+  and official Google Gen AI SDK adapters using JSON-schema output.
+- [x] Fail closed after generation on unknown event/chunk IDs, mismatched case ID, altered timeline
+  timestamps, or MITRE mappings unsupported by cited retrieved knowledge.
+- [x] Add three manually selected fixtures from the existing dataset: `INC-S02-V01`
+  authentication anomaly, `INC-S04-V01` Office-to-PowerShell, and `INC-S08-V01`
+  process/DNS/external-network activity.
+- [x] Run all three cases end-to-end against the live 97-chunk Qdrant corpus; all 3/3 passed schema,
+  evidence, knowledge, key-event, timeline, action, and expected-MITRE checks.
+- [x] Add a single-case/all-demo JSON CLI and a transparent deterministic evaluator without an
+  LLM-as-judge.
+- [x] Add stable investigation tests with fake/mock providers; the full suite has 69
+  passing tests; the normal test suite makes no paid or network LLM calls.
+- [x] Run `INC-S02-V01`, `INC-S04-V01`, and `INC-S08-V01` with the configured live
+  `gemini-3.7-flash` model and Qdrant-backed retrieval; all 3/3 passed schema, evidence, knowledge,
+  key-event, timeline, timestamp, action, expected-MITRE, and overall checks.
+- [x] Record zero hallucinated event IDs and save the live reports plus deterministic evaluation
+  at `artifacts/eval/investigation_demo_gemini.json` without provider secrets or raw API metadata.
+- [x] Demonstrate fail-closed grounding with deterministic rejection of fabricated event
+  `INC-S04-V01-E9999`; this negative test does not call Gemini.
+
 ## Current blockers
 
-None. Paid model/API credentials are not required for the completed checkpoints.
+None for the recorded prototype evaluation. Offline tests require no paid model/API credentials;
+live reruns depend on Gemini quota and model availability.
 
 ## Important decisions
 
@@ -127,8 +208,26 @@ None. Paid model/API credentials are not required for the completed checkpoints.
   non-escalated benign case.
 - ATT&CK data is pinned to Enterprise ATT&CK STIX `19.1`; normalized Sigma documents retain
   modified dates and content hashes from upstream source data.
+- Checkpoint 5 is deliberately dense-only; BM25, RRF, reranking, and LLM generation are excluded
+  so later checkpoints have an honest comparison baseline.
+- Golden queries and expected chunks were manually curated from source content and locked before
+  the first retrieval run; failed queries were not relabeled or tuned away afterward.
+- Retrieval metrics are chunk-level and binary per query. MRR uses the first relevant chunk, and
+  latency is measured after one model warm-up embedding that is not part of the golden set.
+- Parent chunks remain excluded from normal retrieval and are fetched through an explicit parent
+  lookup only when more document context is required.
+- The investigation model never receives the entire case log. Its incident context is exactly the
+  evidence graph already linked by a deterministic candidate behavior.
+- Rule-owned MITRE IDs may trigger a focused metadata-aware dense lookup, but a report mapping is
+  accepted only when its cited retrieved chunk supports the same technique ID.
+- Structured-output conformance is necessary but not sufficient: every provider passes through the
+  same deterministic fail-closed reference, case, timestamp, and MITRE support validator.
+- The offline mock demonstrates orchestration and grounding deterministically. The three-case live
+  Gemini evaluation verifies this bounded demo path, but it is not a broad real-world model-quality
+  or detection-accuracy benchmark.
 
 ## Next action
 
-Checkpoint 4 is complete. Begin Checkpoint 5 only when explicitly requested: RAG query
-construction and retrieval baseline work.
+The grounded investigation vertical slice is complete. Hybrid BM25+dense retrieval, Reciprocal
+Rank Fusion, reranking, UI, anomaly-detection ML, and production integrations remain explicitly
+deferred until requested.

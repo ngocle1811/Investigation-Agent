@@ -1,0 +1,1524 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.7-flash",
+  "summary": {
+    "total_cases": 3,
+    "passed_cases": 3,
+    "failed_cases": 0
+  },
+  "cases": [
+    {
+      "investigation_case": {
+        "case_id": "INC-S02-V01",
+        "candidate_behavior": {
+          "behavior_id": "BH-INC-S02-V01-authentication_anomaly-f449daeb6aa7",
+          "behavior_type": "authentication_anomaly",
+          "case_id": "INC-S02-V01",
+          "supporting_rule_match_ids": [
+            "RM-INC-S02-V01-R001-bdf68f5328fd",
+            "RM-INC-S02-V01-R002-f838a06acfe2"
+          ],
+          "supporting_event_ids": [
+            "INC-S02-V01-E0028",
+            "INC-S02-V01-E0033",
+            "INC-S02-V01-E0035",
+            "INC-S02-V01-E0044",
+            "INC-S02-V01-E0046",
+            "INC-S02-V01-E0055"
+          ],
+          "start_time": "2026-01-16T08:01:25Z",
+          "end_time": "2026-01-16T08:04:40Z",
+          "entities": {
+            "hosts": [
+              "WS-25"
+            ],
+            "users": [
+              "user01"
+            ],
+            "ips": [
+              "203.0.113.80"
+            ],
+            "processes": [],
+            "domains": []
+          },
+          "severity": "high",
+          "deterministic_score": 11,
+          "description": "Repeated authentication failures, optionally followed by success, share one identity."
+        },
+        "rule_matches": [
+          {
+            "match_id": "RM-INC-S02-V01-R001-bdf68f5328fd",
+            "rule_id": "R001",
+            "case_id": "INC-S02-V01",
+            "matched_event_ids": [
+              "INC-S02-V01-E0028",
+              "INC-S02-V01-E0033",
+              "INC-S02-V01-E0035",
+              "INC-S02-V01-E0044",
+              "INC-S02-V01-E0046"
+            ],
+            "start_time": "2026-01-16T08:01:25Z",
+            "end_time": "2026-01-16T08:03:45Z",
+            "entities": {
+              "hosts": [
+                "WS-25"
+              ],
+              "users": [
+                "user01"
+              ],
+              "ips": [
+                "203.0.113.80"
+              ],
+              "processes": [],
+              "domains": []
+            },
+            "severity": "medium",
+            "reason": "Observed 5 failed logons for one user, source IP, and host within 300 seconds.",
+            "metadata": {
+              "correlation_key": [
+                "WS-25",
+                "user01",
+                "203.0.113.80"
+              ],
+              "threshold": 5
+            }
+          },
+          {
+            "match_id": "RM-INC-S02-V01-R002-f838a06acfe2",
+            "rule_id": "R002",
+            "case_id": "INC-S02-V01",
+            "matched_event_ids": [
+              "INC-S02-V01-E0028",
+              "INC-S02-V01-E0033",
+              "INC-S02-V01-E0035",
+              "INC-S02-V01-E0044",
+              "INC-S02-V01-E0046",
+              "INC-S02-V01-E0055"
+            ],
+            "start_time": "2026-01-16T08:01:25Z",
+            "end_time": "2026-01-16T08:04:40Z",
+            "entities": {
+              "hosts": [
+                "WS-25"
+              ],
+              "users": [
+                "user01"
+              ],
+              "ips": [
+                "203.0.113.80"
+              ],
+              "processes": [],
+              "domains": []
+            },
+            "severity": "high",
+            "reason": "A successful logon followed 5 failures for the same user, source IP, and host within 300 seconds.",
+            "metadata": {
+              "correlation_key": [
+                "WS-25",
+                "user01",
+                "203.0.113.80"
+              ],
+              "threshold": 5
+            }
+          }
+        ],
+        "rule_context": [
+          {
+            "rule_id": "R001",
+            "name": "Multiple Failed Logons",
+            "description": "Detect repeated failed authentication for one user, source IP, and host.",
+            "mitre_techniques": [
+              "T1110.001"
+            ]
+          },
+          {
+            "rule_id": "R002",
+            "name": "Failed Logons Followed By Success",
+            "description": "Detect repeated failed authentication followed by success for one identity tuple.",
+            "mitre_techniques": [
+              "T1110.001"
+            ]
+          }
+        ],
+        "related_events": [
+          {
+            "event_id": "INC-S02-V01-E0028",
+            "timestamp": "2026-01-16T08:01:25Z",
+            "source_type": "windows_security",
+            "source_event_id": "4625",
+            "event_type": "failed_logon",
+            "host": "WS-25",
+            "user": "user01",
+            "process_name": null,
+            "parent_process_name": null,
+            "process_id": null,
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "203.0.113.80",
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "logon_type": 3,
+              "status": "failure"
+            }
+          },
+          {
+            "event_id": "INC-S02-V01-E0033",
+            "timestamp": "2026-01-16T08:02:00Z",
+            "source_type": "windows_security",
+            "source_event_id": "4625",
+            "event_type": "failed_logon",
+            "host": "WS-25",
+            "user": "user01",
+            "process_name": null,
+            "parent_process_name": null,
+            "process_id": null,
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "203.0.113.80",
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "logon_type": 3,
+              "status": "failure"
+            }
+          },
+          {
+            "event_id": "INC-S02-V01-E0035",
+            "timestamp": "2026-01-16T08:02:35Z",
+            "source_type": "windows_security",
+            "source_event_id": "4625",
+            "event_type": "failed_logon",
+            "host": "WS-25",
+            "user": "user01",
+            "process_name": null,
+            "parent_process_name": null,
+            "process_id": null,
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "203.0.113.80",
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "logon_type": 3,
+              "status": "failure"
+            }
+          },
+          {
+            "event_id": "INC-S02-V01-E0044",
+            "timestamp": "2026-01-16T08:03:10Z",
+            "source_type": "windows_security",
+            "source_event_id": "4625",
+            "event_type": "failed_logon",
+            "host": "WS-25",
+            "user": "user01",
+            "process_name": null,
+            "parent_process_name": null,
+            "process_id": null,
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "203.0.113.80",
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "logon_type": 3,
+              "status": "failure"
+            }
+          },
+          {
+            "event_id": "INC-S02-V01-E0046",
+            "timestamp": "2026-01-16T08:03:45Z",
+            "source_type": "windows_security",
+            "source_event_id": "4625",
+            "event_type": "failed_logon",
+            "host": "WS-25",
+            "user": "user01",
+            "process_name": null,
+            "parent_process_name": null,
+            "process_id": null,
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "203.0.113.80",
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "logon_type": 3,
+              "status": "failure"
+            }
+          },
+          {
+            "event_id": "INC-S02-V01-E0055",
+            "timestamp": "2026-01-16T08:04:40Z",
+            "source_type": "windows_security",
+            "source_event_id": "4624",
+            "event_type": "successful_logon",
+            "host": "WS-25",
+            "user": "user01",
+            "process_name": null,
+            "parent_process_name": null,
+            "process_id": null,
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "203.0.113.80",
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "logon_type": 3,
+              "status": "success"
+            }
+          }
+        ]
+      },
+      "retrieval_query": "Behavior authentication_anomaly: Repeated authentication failures, optionally followed by success, share one identity. Detections: R001 Multiple Failed Logons: Detect repeated failed authentication for one user, source IP, and host.; R002 Failed Logons Followed By Success: Detect repeated failed authentication followed by success for one identity tuple. Telemetry: Windows Event ID 4625 failed_logon; Windows Event ID 4624 successful_logon. Security concepts: account compromise brute force password guessing valid accounts. MITRE ATT&CK techniques: T1110.001.",
+      "supplemental_retrieval_queries": [
+        "MITRE ATT&CK technique T1110.001"
+      ],
+      "retrieved_knowledge": [
+        {
+          "citation_id": "K1",
+          "rank": 1,
+          "score": 0.823198,
+          "chunk_id": "chk-f20c772f269578cf988ef5e35a2319b3",
+          "document_id": "microsoft-event-4625",
+          "source": "microsoft",
+          "source_type": "windows_event_doc",
+          "title": "4625(F): An account failed to log on. — Event Description",
+          "section": "Event Description",
+          "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4625",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "raw_content_hash": "d24de648e393db411891f1c1d5b7ee0f31f49c147f2815233af801728f34853e",
+            "chunk_role": "child",
+            "heading_level": 5
+          }
+        },
+        {
+          "citation_id": "K2",
+          "rank": 2,
+          "score": 0.800681,
+          "chunk_id": "chk-7b263addd2f83a3f55f408082d2eb2ee",
+          "document_id": "microsoft-event-4625",
+          "source": "microsoft",
+          "source_type": "windows_event_doc",
+          "title": "4625(F): An account failed to log on. — Failure Information",
+          "section": "Failure Information",
+          "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4625",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "raw_content_hash": "d24de648e393db411891f1c1d5b7ee0f31f49c147f2815233af801728f34853e",
+            "chunk_role": "child",
+            "heading_level": 5
+          }
+        },
+        {
+          "citation_id": "K3",
+          "rank": 3,
+          "score": 0.795448,
+          "chunk_id": "chk-5234160376865967ed2d9e17f9409531",
+          "document_id": "microsoft-event-4625",
+          "source": "microsoft",
+          "source_type": "windows_event_doc",
+          "title": "4625(F): An account failed to log on. — Account For Which Logon Failed",
+          "section": "Account For Which Logon Failed",
+          "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4625",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "raw_content_hash": "d24de648e393db411891f1c1d5b7ee0f31f49c147f2815233af801728f34853e",
+            "chunk_role": "child",
+            "heading_level": 5
+          }
+        },
+        {
+          "citation_id": "K4",
+          "rank": 4,
+          "score": 0.794346,
+          "chunk_id": "chk-f3ff0afd963bfd13fd021f46a0c2a612",
+          "document_id": "microsoft-event-4624",
+          "source": "microsoft",
+          "source_type": "windows_event_doc",
+          "title": "4624(S): An account was successfully logged on. — Subcategory",
+          "section": "Subcategory",
+          "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "raw_content_hash": "10cc471a89eb9a4563051705169fb8897bdd61ffb990f20d94b6f24352e4bb0f",
+            "chunk_role": "child",
+            "heading_level": 5
+          }
+        },
+        {
+          "citation_id": "K5",
+          "rank": 5,
+          "score": 0.790774,
+          "chunk_id": "chk-1e185095966f7a8ef293e4c421e51fdc",
+          "document_id": "microsoft-event-4625",
+          "source": "microsoft",
+          "source_type": "windows_event_doc",
+          "title": "4625(F): An account failed to log on. — Security Monitoring Recommendations",
+          "section": "Security Monitoring Recommendations",
+          "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4625",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "raw_content_hash": "d24de648e393db411891f1c1d5b7ee0f31f49c147f2815233af801728f34853e",
+            "chunk_role": "child",
+            "heading_level": 2
+          }
+        },
+        {
+          "citation_id": "K6",
+          "rank": 6,
+          "score": 0.644099,
+          "chunk_id": "chk-58de45c6e0090c4ddfea11f3ae25407b",
+          "document_id": "mitre-t1110-001",
+          "source": "mitre_attack",
+          "source_type": "mitre_attack",
+          "title": "T1110.001 Password Guessing",
+          "section": "Sub-technique",
+          "url": "https://attack.mitre.org/techniques/T1110/001",
+          "technique_id": "T1110.001",
+          "sigma_rule_id": null,
+          "metadata": {
+            "name": "Password Guessing",
+            "tactics": [
+              "credential-access"
+            ],
+            "is_subtechnique": true,
+            "parent_technique_id": "T1110",
+            "stix_id": "attack-pattern--09c4c11e-4fa1-4f8c-8dad-3cf8e69ad119",
+            "raw_content_hash": "bdf1ce86a4e604214c5076d37ae4dcb322678afc528df8492e6fdc1b554f5da3",
+            "chunk_role": "subtechnique"
+          }
+        }
+      ],
+      "report": {
+        "case_id": "INC-S02-V01",
+        "summary": "An authentication anomaly was detected involving user 'user01' connecting from source IP 203.0.113.80 to host WS-25. The sequence comprised 5 consecutive failed network logon attempts (Event ID 4625, Logon Type 3) between 08:01:25Z and 08:03:45Z, immediately followed by a successful network logon (Event ID 4624) at 08:04:40Z.",
+        "summary_evidence_event_ids": [
+          "INC-S02-V01-E0028",
+          "INC-S02-V01-E0033",
+          "INC-S02-V01-E0035",
+          "INC-S02-V01-E0044",
+          "INC-S02-V01-E0046",
+          "INC-S02-V01-E0055"
+        ],
+        "timeline": [
+          {
+            "event_id": "INC-S02-V01-E0028",
+            "timestamp": "2026-01-16T08:01:25Z",
+            "description": "Failed network logon (Logon Type 3) for account 'user01' on host WS-25 from source IP 203.0.113.80."
+          },
+          {
+            "event_id": "INC-S02-V01-E0033",
+            "timestamp": "2026-01-16T08:02:00Z",
+            "description": "Failed network logon (Logon Type 3) for account 'user01' on host WS-25 from source IP 203.0.113.80."
+          },
+          {
+            "event_id": "INC-S02-V01-E0035",
+            "timestamp": "2026-01-16T08:02:35Z",
+            "description": "Failed network logon (Logon Type 3) for account 'user01' on host WS-25 from source IP 203.0.113.80."
+          },
+          {
+            "event_id": "INC-S02-V01-E0044",
+            "timestamp": "2026-01-16T08:03:10Z",
+            "description": "Failed network logon (Logon Type 3) for account 'user01' on host WS-25 from source IP 203.0.113.80."
+          },
+          {
+            "event_id": "INC-S02-V01-E0046",
+            "timestamp": "2026-01-16T08:03:45Z",
+            "description": "Failed network logon (Logon Type 3) for account 'user01' on host WS-25 from source IP 203.0.113.80."
+          },
+          {
+            "event_id": "INC-S02-V01-E0055",
+            "timestamp": "2026-01-16T08:04:40Z",
+            "description": "Successful network logon (Logon Type 3) for account 'user01' on host WS-25 from source IP 203.0.113.80."
+          }
+        ],
+        "findings": [
+          {
+            "title": "Multiple Consecutive Failed Logon Attempts",
+            "explanation": "Five consecutive failed network logon attempts (Logon Type 3, Windows Event ID 4625) occurred within approximately 2.5 minutes from source IP 203.0.113.80 targeted at user 'user01' on host WS-25.",
+            "claim_type": "fact",
+            "evidence_event_ids": [
+              "INC-S02-V01-E0028",
+              "INC-S02-V01-E0033",
+              "INC-S02-V01-E0035",
+              "INC-S02-V01-E0044",
+              "INC-S02-V01-E0046"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-f20c772f269578cf988ef5e35a2319b3",
+              "chk-1e185095966f7a8ef293e4c421e51fdc"
+            ],
+            "confidence": "high"
+          },
+          {
+            "title": "Authentication Success Following Failures",
+            "explanation": "Following the 5 failed logon attempts, a successful network logon (Logon Type 3, Windows Event ID 4624) was recorded from the exact same source IP 203.0.113.80 for 'user01' on WS-25 less than a minute later.",
+            "claim_type": "fact",
+            "evidence_event_ids": [
+              "INC-S02-V01-E0055"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-f3ff0afd963bfd13fd021f46a0c2a612"
+            ],
+            "confidence": "high"
+          },
+          {
+            "title": "Potential Password Guessing Activity",
+            "explanation": "The pattern of repeated authentication failures against a single target identity followed quickly by a successful logon is characteristic of iterative password guessing attempts.",
+            "claim_type": "inference",
+            "evidence_event_ids": [
+              "INC-S02-V01-E0028",
+              "INC-S02-V01-E0033",
+              "INC-S02-V01-E0035",
+              "INC-S02-V01-E0044",
+              "INC-S02-V01-E0046",
+              "INC-S02-V01-E0055"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-58de45c6e0090c4ddfea11f3ae25407b",
+              "chk-1e185095966f7a8ef293e4c421e51fdc"
+            ],
+            "confidence": "medium"
+          }
+        ],
+        "why_suspicious": [
+          {
+            "reason": "Rapid successive authentication failures for an account followed by a sudden success from an external/remote IP (203.0.113.80) matches patterns of brute force or password guessing behavior.",
+            "evidence_event_ids": [
+              "INC-S02-V01-E0028",
+              "INC-S02-V01-E0033",
+              "INC-S02-V01-E0035",
+              "INC-S02-V01-E0044",
+              "INC-S02-V01-E0046",
+              "INC-S02-V01-E0055"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-58de45c6e0090c4ddfea11f3ae25407b",
+              "chk-1e185095966f7a8ef293e4c421e51fdc"
+            ]
+          }
+        ],
+        "mitre_techniques": [
+          {
+            "technique_id": "T1110.001",
+            "name": "Password Guessing",
+            "reason": "Repeated network logon failures against user01 followed by a successful logon indicate potential password guessing across standard services generating Event ID 4625/4624.",
+            "evidence_event_ids": [
+              "INC-S02-V01-E0028",
+              "INC-S02-V01-E0033",
+              "INC-S02-V01-E0035",
+              "INC-S02-V01-E0044",
+              "INC-S02-V01-E0046",
+              "INC-S02-V01-E0055"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-58de45c6e0090c4ddfea11f3ae25407b"
+            ]
+          }
+        ],
+        "recommended_actions": [
+          {
+            "action": "Investigate subsequent process executions and user activity on WS-25 under account user01 following the successful logon at 08:04:40Z.",
+            "reason": "To determine whether unauthorized post-authentication actions or persistence mechanisms were established following the successful logon.",
+            "priority": "high"
+          },
+          {
+            "action": "Verify the ownership and legitimacy of source IP 203.0.113.80 and consult with the user regarding their login attempts.",
+            "reason": "To rule out legitimate user mistyping of passwords versus unauthorized external access attempts.",
+            "priority": "medium"
+          },
+          {
+            "action": "Consider credential reset for user01 and examine host WS-25 for any indicators of compromise.",
+            "reason": "If the source IP 203.0.113.80 is confirmed unauthorized, the account credentials should be considered compromised.",
+            "priority": "medium"
+          }
+        ],
+        "limitations": [
+          "Process details, command lines, destination ports, and specific failure sub-status codes (e.g., bad password vs. locked account) were not populated in the event evidence.",
+          "No post-logon activity logs are present in the provided evidence to confirm actions taken during the active session."
+        ]
+      },
+      "grounding": {
+        "valid": true,
+        "case_id_matches": true,
+        "all_evidence_refs_exist": true,
+        "all_knowledge_refs_exist": true,
+        "timeline_event_ids_belong_to_case": true,
+        "timeline_timestamps_match_evidence": true,
+        "mitre_knowledge_support_valid": true,
+        "unknown_event_ids": [],
+        "unknown_knowledge_chunk_ids": [],
+        "unsupported_mitre_techniques": []
+      },
+      "llm": {
+        "provider": "gemini",
+        "model": "gemini-3.7-flash",
+        "latency_ms": 15091.917,
+        "prompt_tokens": 8215,
+        "completion_tokens": 2508
+      },
+      "evaluation": {
+        "case_id": "INC-S02-V01",
+        "schema_valid": true,
+        "evidence_refs_valid": true,
+        "knowledge_refs_valid": true,
+        "key_events_cited": true,
+        "timeline_refs_valid": true,
+        "timestamps_valid": true,
+        "hallucinated_event_ids": [],
+        "expected_mitre_covered": true,
+        "recommended_actions_present": true,
+        "overall_pass": true,
+        "missing_key_event_ids": [],
+        "missing_mitre_techniques": []
+      }
+    },
+    {
+      "investigation_case": {
+        "case_id": "INC-S04-V01",
+        "candidate_behavior": {
+          "behavior_id": "BH-INC-S04-V01-office_script_interpreter-6e2c6df3aa2a",
+          "behavior_type": "office_script_interpreter",
+          "case_id": "INC-S04-V01",
+          "supporting_rule_match_ids": [
+            "RM-INC-S04-V01-R003-fcffca227a4b",
+            "RM-INC-S04-V01-R004-64065e68051b",
+            "RM-INC-S04-V01-R010-fcffca227a4b"
+          ],
+          "supporting_event_ids": [
+            "INC-S04-V01-E0039",
+            "INC-S04-V01-E0044"
+          ],
+          "start_time": "2026-01-18T08:00:59Z",
+          "end_time": "2026-01-18T08:01:34Z",
+          "entities": {
+            "hosts": [
+              "WS-75"
+            ],
+            "users": [
+              "user04"
+            ],
+            "ips": [],
+            "processes": [
+              "powershell.exe",
+              "WINWORD.EXE"
+            ],
+            "domains": []
+          },
+          "severity": "high",
+          "deterministic_score": 13,
+          "description": "An Office process created a script interpreter with supporting command context."
+        },
+        "rule_matches": [
+          {
+            "match_id": "RM-INC-S04-V01-R003-fcffca227a4b",
+            "rule_id": "R003",
+            "case_id": "INC-S04-V01",
+            "matched_event_ids": [
+              "INC-S04-V01-E0044"
+            ],
+            "start_time": "2026-01-18T08:01:34Z",
+            "end_time": "2026-01-18T08:01:34Z",
+            "entities": {
+              "hosts": [
+                "WS-75"
+              ],
+              "users": [
+                "user04"
+              ],
+              "ips": [],
+              "processes": [
+                "powershell.exe"
+              ],
+              "domains": []
+            },
+            "severity": "low",
+            "reason": "Observed PowerShell process creation; this is a low-level signal only.",
+            "metadata": {
+              "normalized_process_name": "powershell.exe"
+            }
+          },
+          {
+            "match_id": "RM-INC-S04-V01-R004-64065e68051b",
+            "rule_id": "R004",
+            "case_id": "INC-S04-V01",
+            "matched_event_ids": [
+              "INC-S04-V01-E0039",
+              "INC-S04-V01-E0044"
+            ],
+            "start_time": "2026-01-18T08:00:59Z",
+            "end_time": "2026-01-18T08:01:34Z",
+            "entities": {
+              "hosts": [
+                "WS-75"
+              ],
+              "users": [
+                "user04"
+              ],
+              "ips": [],
+              "processes": [
+                "powershell.exe",
+                "WINWORD.EXE"
+              ],
+              "domains": []
+            },
+            "severity": "high",
+            "reason": "An Office process created a script interpreter with a validated relation.",
+            "metadata": {
+              "correlation_key": [
+                "WS-75",
+                "7063"
+              ]
+            }
+          },
+          {
+            "match_id": "RM-INC-S04-V01-R010-fcffca227a4b",
+            "rule_id": "R010",
+            "case_id": "INC-S04-V01",
+            "matched_event_ids": [
+              "INC-S04-V01-E0044"
+            ],
+            "start_time": "2026-01-18T08:01:34Z",
+            "end_time": "2026-01-18T08:01:34Z",
+            "entities": {
+              "hosts": [
+                "WS-75"
+              ],
+              "users": [
+                "user04"
+              ],
+              "ips": [],
+              "processes": [
+                "powershell.exe"
+              ],
+              "domains": []
+            },
+            "severity": "medium",
+            "reason": "A configured exact synthetic command marker was observed.",
+            "metadata": {
+              "matched_markers": [
+                "<synthetic-office-action>"
+              ]
+            }
+          }
+        ],
+        "rule_context": [
+          {
+            "rule_id": "R003",
+            "name": "PowerShell Execution",
+            "description": "Record PowerShell process creation as a low-level signal without malicious attribution.",
+            "mitre_techniques": [
+              "T1059.001"
+            ]
+          },
+          {
+            "rule_id": "R004",
+            "name": "Office Process Spawns Script Interpreter",
+            "description": "Detect a validated Office parent and script-interpreter child process relation.",
+            "mitre_techniques": [
+              "T1059.001"
+            ]
+          },
+          {
+            "rule_id": "R010",
+            "name": "Suspicious Synthetic Command Marker",
+            "description": "Detect only exact safe suspicious markers emitted by the controlled generator.",
+            "mitre_techniques": [
+              "T1059.001"
+            ]
+          }
+        ],
+        "related_events": [
+          {
+            "event_id": "INC-S04-V01-E0039",
+            "timestamp": "2026-01-18T08:00:59Z",
+            "source_type": "sysmon",
+            "source_event_id": "1",
+            "event_type": "process_create",
+            "host": "WS-75",
+            "user": "user04",
+            "process_name": "WINWORD.EXE",
+            "parent_process_name": "explorer.exe",
+            "process_id": "7063",
+            "parent_process_id": "6535",
+            "command_line": "WINWORD.EXE <synthetic-document>",
+            "src_ip": null,
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "image": "WINWORD.EXE",
+              "parent_image": "explorer.exe"
+            }
+          },
+          {
+            "event_id": "INC-S04-V01-E0044",
+            "timestamp": "2026-01-18T08:01:34Z",
+            "source_type": "sysmon",
+            "source_event_id": "1",
+            "event_type": "process_create",
+            "host": "WS-75",
+            "user": "user04",
+            "process_name": "powershell.exe",
+            "parent_process_name": "WINWORD.EXE",
+            "process_id": "51221",
+            "parent_process_id": "7063",
+            "command_line": "powershell.exe -Command \"<synthetic-office-action>\"",
+            "src_ip": null,
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "image": "powershell.exe",
+              "parent_image": "WINWORD.EXE"
+            }
+          }
+        ]
+      },
+      "retrieval_query": "Behavior office_script_interpreter: An Office process created a script interpreter with supporting command context. Detections: R003 PowerShell Execution: Record PowerShell process creation as a low-level signal without malicious attribution.; R004 Office Process Spawns Script Interpreter: Detect a validated Office parent and script-interpreter child process relation.; R010 Suspicious Synthetic Command Marker: Detect only exact safe suspicious markers emitted by the controlled generator. Telemetry: Sysmon Event ID 1 process_create. Security concepts: Office parent process script interpreter PowerShell suspicious process tree. MITRE ATT&CK techniques: T1059.001.",
+      "supplemental_retrieval_queries": [
+        "MITRE ATT&CK technique T1059.001"
+      ],
+      "retrieved_knowledge": [
+        {
+          "citation_id": "K1",
+          "rank": 1,
+          "score": 0.792679,
+          "chunk_id": "chk-738aa4ebe9ddee04a2a099dfcb8081e3",
+          "document_id": "sigma-b9d9cc83-380b-4ba3-8d8f-60c0e7e2930c",
+          "source": "sigma",
+          "source_type": "sigma_rule",
+          "title": "Suspicious PowerShell Encoded Command Patterns",
+          "section": "Rule",
+          "url": "https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/windows/process_creation/proc_creation_win_powershell_base64_encoded_cmd_patterns.yml",
+          "technique_id": null,
+          "sigma_rule_id": "b9d9cc83-380b-4ba3-8d8f-60c0e7e2930c",
+          "metadata": {
+            "status": "test",
+            "level": "high",
+            "tags": [
+              "attack.execution",
+              "attack.t1059.001"
+            ],
+            "logsource": {
+              "category": "process_creation",
+              "product": "windows"
+            },
+            "raw_content_hash": "b88a027bdbd78d16f72c07bfad6b7b8c44b485ada030b7320b656a72cb8b9934",
+            "chunk_role": "rule"
+          }
+        },
+        {
+          "citation_id": "K2",
+          "rank": 2,
+          "score": 0.768669,
+          "chunk_id": "chk-2eb234836f630e8477a47389b7470f57",
+          "document_id": "sigma-208748f7-881d-47ac-a29c-07ea84bf691d",
+          "source": "sigma",
+          "source_type": "sigma_rule",
+          "title": "Suspicious Outlook Child Process",
+          "section": "Rule",
+          "url": "https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/windows/process_creation/proc_creation_win_office_outlook_susp_child_processes.yml",
+          "technique_id": null,
+          "sigma_rule_id": "208748f7-881d-47ac-a29c-07ea84bf691d",
+          "metadata": {
+            "status": "test",
+            "level": "high",
+            "tags": [
+              "attack.execution",
+              "attack.t1204.002"
+            ],
+            "logsource": {
+              "category": "process_creation",
+              "product": "windows"
+            },
+            "raw_content_hash": "e29b56538de711aa8b082c6ffbe263dc39b2d839098eab4122c3d970e7c3890e",
+            "chunk_role": "rule"
+          }
+        },
+        {
+          "citation_id": "K3",
+          "rank": 3,
+          "score": 0.75685,
+          "chunk_id": "chk-43d369b791985cd56e9bdf131a946ba6",
+          "document_id": "microsoft-sysmon-events",
+          "source": "microsoft",
+          "source_type": "sysmon_doc",
+          "title": "Sysmon v15.21 — Event ID 10: ProcessAccess",
+          "section": "Event ID 10: ProcessAccess",
+          "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "product": "sysmon",
+            "raw_content_hash": "513042e383e95c1c4638c865473da4a4be573f3892b100b9d9e64ecc58727fe3",
+            "chunk_role": "child",
+            "heading_level": 3,
+            "sysmon_event_id": 10,
+            "sysmon_event_name": "ProcessAccess"
+          }
+        },
+        {
+          "citation_id": "K4",
+          "rank": 4,
+          "score": 0.755792,
+          "chunk_id": "chk-1440cde9af406d56f166da59983559ae",
+          "document_id": "mitre-t1059-001",
+          "source": "mitre_attack",
+          "source_type": "mitre_attack",
+          "title": "T1059.001 PowerShell",
+          "section": "Sub-technique",
+          "url": "https://attack.mitre.org/techniques/T1059/001",
+          "technique_id": "T1059.001",
+          "sigma_rule_id": null,
+          "metadata": {
+            "name": "PowerShell",
+            "tactics": [
+              "execution"
+            ],
+            "is_subtechnique": true,
+            "parent_technique_id": "T1059",
+            "stix_id": "attack-pattern--970a3432-3237-47ad-bcca-7d8cbb217736",
+            "raw_content_hash": "bdf1ce86a4e604214c5076d37ae4dcb322678afc528df8492e6fdc1b554f5da3",
+            "chunk_role": "subtechnique"
+          }
+        },
+        {
+          "citation_id": "K5",
+          "rank": 5,
+          "score": 0.747973,
+          "chunk_id": "chk-67f6678b1f8bc1c557a67d0123f6f996",
+          "document_id": "mitre-t1059",
+          "source": "mitre_attack",
+          "source_type": "mitre_attack",
+          "title": "T1059 Command and Scripting Interpreter",
+          "section": "Technique",
+          "url": "https://attack.mitre.org/techniques/T1059",
+          "technique_id": "T1059",
+          "sigma_rule_id": null,
+          "metadata": {
+            "name": "Command and Scripting Interpreter",
+            "tactics": [
+              "execution"
+            ],
+            "is_subtechnique": false,
+            "parent_technique_id": null,
+            "stix_id": "attack-pattern--7385dfaf-6886-4229-9ecd-6fd678040830",
+            "raw_content_hash": "bdf1ce86a4e604214c5076d37ae4dcb322678afc528df8492e6fdc1b554f5da3",
+            "chunk_role": "technique"
+          }
+        }
+      ],
+      "report": {
+        "case_id": "INC-S04-V01",
+        "summary": "On host WS-75, an instance of Microsoft Word (WINWORD.EXE) spawned a PowerShell process executing a command on behalf of user user04.",
+        "summary_evidence_event_ids": [
+          "INC-S04-V01-E0039",
+          "INC-S04-V01-E0044"
+        ],
+        "timeline": [
+          {
+            "event_id": "INC-S04-V01-E0039",
+            "timestamp": "2026-01-18T08:00:59Z",
+            "description": "WINWORD.EXE (PID 7063) was launched by explorer.exe (PID 6535) with the command line 'WINWORD.EXE <synthetic-document>' for user user04 on host WS-75."
+          },
+          {
+            "event_id": "INC-S04-V01-E0044",
+            "timestamp": "2026-01-18T08:01:34Z",
+            "description": "WINWORD.EXE (PID 7063) spawned powershell.exe (PID 51221) with command line 'powershell.exe -Command \"<synthetic-office-action>\"' for user user04 on host WS-75."
+          }
+        ],
+        "findings": [
+          {
+            "title": "Office Process Spawns PowerShell Script Interpreter",
+            "explanation": "Microsoft Word (WINWORD.EXE, PID 7063) directly created a child process running powershell.exe (PID 51221) with the command line argument '-Command \"<synthetic-office-action>\"'.",
+            "claim_type": "fact",
+            "evidence_event_ids": [
+              "INC-S04-V01-E0039",
+              "INC-S04-V01-E0044"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-1440cde9af406d56f166da59983559ae",
+              "chk-67f6678b1f8bc1c557a67d0123f6f996"
+            ],
+            "confidence": "high"
+          },
+          {
+            "title": "Potential Malicious Execution via Office Application",
+            "explanation": "Execution of script interpreters such as PowerShell directly spawned by Office applications is commonly indicative of macro-based or document-based code execution attempts.",
+            "claim_type": "inference",
+            "evidence_event_ids": [
+              "INC-S04-V01-E0039",
+              "INC-S04-V01-E0044"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-1440cde9af406d56f166da59983559ae",
+              "chk-67f6678b1f8bc1c557a67d0123f6f996"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "why_suspicious": [
+          {
+            "reason": "Word processing applications such as WINWORD.EXE should rarely directly invoke command and script interpreters like powershell.exe under normal business operations.",
+            "evidence_event_ids": [
+              "INC-S04-V01-E0039",
+              "INC-S04-V01-E0044"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-67f6678b1f8bc1c557a67d0123f6f996"
+            ]
+          },
+          {
+            "reason": "PowerShell was invoked directly by an Office parent with inline command parameters (-Command), matching common script interpreter abuse techniques.",
+            "evidence_event_ids": [
+              "INC-S04-V01-E0044"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-1440cde9af406d56f166da59983559ae"
+            ]
+          }
+        ],
+        "mitre_techniques": [
+          {
+            "technique_id": "T1059.001",
+            "name": "PowerShell",
+            "reason": "Adversaries abuse PowerShell commands and scripts for execution, as demonstrated by the invocation of powershell.exe with the -Command parameter from WINWORD.EXE.",
+            "evidence_event_ids": [
+              "INC-S04-V01-E0044"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-1440cde9af406d56f166da59983559ae"
+            ]
+          },
+          {
+            "technique_id": "T1059",
+            "name": "Command and Scripting Interpreter",
+            "reason": "Adversaries abuse command and script interpreters such as PowerShell embedded in or spawned from client applications to achieve execution.",
+            "evidence_event_ids": [
+              "INC-S04-V01-E0039",
+              "INC-S04-V01-E0044"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-67f6678b1f8bc1c557a67d0123f6f996"
+            ]
+          }
+        ],
+        "recommended_actions": [
+          {
+            "action": "Inspect the document file opened by WINWORD.EXE on WS-75 to identify embedded macros, scripts, or external templates.",
+            "reason": "To verify if the document contains unauthorized macros or malicious code responsible for triggering the PowerShell process.",
+            "priority": "high"
+          },
+          {
+            "action": "Review host process tree and script block logs for PowerShell PID 51221 and subsequent child processes on host WS-75.",
+            "reason": "To determine what actions, network connections, or file modifications were attempted by the PowerShell execution.",
+            "priority": "high"
+          },
+          {
+            "action": "Examine host and network telemetry for any outbound network connections initiated around 2026-01-18T08:01:34Z from WS-75.",
+            "reason": "To detect potential secondary payload downloads or command and control communication.",
+            "priority": "medium"
+          }
+        ],
+        "limitations": [
+          "The full content of the synthetic document and the exact commands executed inside '<synthetic-office-action>' are masked or not provided in the telemetry.",
+          "Network event logs and file modification logs are not present in the provided evidence to determine subsequent activity following PowerShell execution."
+        ]
+      },
+      "grounding": {
+        "valid": true,
+        "case_id_matches": true,
+        "all_evidence_refs_exist": true,
+        "all_knowledge_refs_exist": true,
+        "timeline_event_ids_belong_to_case": true,
+        "timeline_timestamps_match_evidence": true,
+        "mitre_knowledge_support_valid": true,
+        "unknown_event_ids": [],
+        "unknown_knowledge_chunk_ids": [],
+        "unsupported_mitre_techniques": []
+      },
+      "llm": {
+        "provider": "gemini",
+        "model": "gemini-3.7-flash",
+        "latency_ms": 23126.272,
+        "prompt_tokens": 7604,
+        "completion_tokens": 1694
+      },
+      "evaluation": {
+        "case_id": "INC-S04-V01",
+        "schema_valid": true,
+        "evidence_refs_valid": true,
+        "knowledge_refs_valid": true,
+        "key_events_cited": true,
+        "timeline_refs_valid": true,
+        "timestamps_valid": true,
+        "hallucinated_event_ids": [],
+        "expected_mitre_covered": true,
+        "recommended_actions_present": true,
+        "overall_pass": true,
+        "missing_key_event_ids": [],
+        "missing_mitre_techniques": []
+      }
+    },
+    {
+      "investigation_case": {
+        "case_id": "INC-S08-V01",
+        "candidate_behavior": {
+          "behavior_id": "BH-INC-S08-V01-process_dns_network_activity-6150c21e5617",
+          "behavior_type": "process_dns_network_activity",
+          "case_id": "INC-S08-V01",
+          "supporting_rule_match_ids": [
+            "RM-INC-S08-V01-R005-0200a5abc58b",
+            "RM-INC-S08-V01-R009-6db2dba6263b"
+          ],
+          "supporting_event_ids": [
+            "INC-S08-V01-E0020",
+            "INC-S08-V01-E0024",
+            "INC-S08-V01-E0028"
+          ],
+          "start_time": "2026-01-22T08:00:34Z",
+          "end_time": "2026-01-22T08:01:24Z",
+          "entities": {
+            "hosts": [
+              "WS-53"
+            ],
+            "users": [
+              "user14"
+            ],
+            "ips": [
+              "10.21.3.155",
+              "198.51.100.105"
+            ],
+            "processes": [
+              "wscript.exe"
+            ],
+            "domains": [
+              "telemetry-17.example.net"
+            ]
+          },
+          "severity": "high",
+          "deterministic_score": 11,
+          "description": "A process performed DNS resolution and then connected to the external destination."
+        },
+        "rule_matches": [
+          {
+            "match_id": "RM-INC-S08-V01-R005-0200a5abc58b",
+            "rule_id": "R005",
+            "case_id": "INC-S08-V01",
+            "matched_event_ids": [
+              "INC-S08-V01-E0020",
+              "INC-S08-V01-E0028"
+            ],
+            "start_time": "2026-01-22T08:00:34Z",
+            "end_time": "2026-01-22T08:01:24Z",
+            "entities": {
+              "hosts": [
+                "WS-53"
+              ],
+              "users": [
+                "user14"
+              ],
+              "ips": [
+                "10.21.3.155",
+                "198.51.100.105"
+              ],
+              "processes": [
+                "wscript.exe"
+              ],
+              "domains": [
+                "telemetry-17.example.net"
+              ]
+            },
+            "severity": "medium",
+            "reason": "A process was followed by an external network connection using the same host and process ID.",
+            "metadata": {
+              "correlation_key": [
+                "WS-53",
+                "46336"
+              ]
+            }
+          },
+          {
+            "match_id": "RM-INC-S08-V01-R009-6db2dba6263b",
+            "rule_id": "R009",
+            "case_id": "INC-S08-V01",
+            "matched_event_ids": [
+              "INC-S08-V01-E0020",
+              "INC-S08-V01-E0024",
+              "INC-S08-V01-E0028"
+            ],
+            "start_time": "2026-01-22T08:00:34Z",
+            "end_time": "2026-01-22T08:01:24Z",
+            "entities": {
+              "hosts": [
+                "WS-53"
+              ],
+              "users": [
+                "user14"
+              ],
+              "ips": [
+                "10.21.3.155",
+                "198.51.100.105"
+              ],
+              "processes": [
+                "wscript.exe"
+              ],
+              "domains": [
+                "telemetry-17.example.net"
+              ]
+            },
+            "severity": "high",
+            "reason": "A process performed DNS resolution and then connected to the resolved external destination using the same process ID.",
+            "metadata": {
+              "correlation_key": [
+                "WS-53",
+                "46336"
+              ]
+            }
+          }
+        ],
+        "rule_context": [
+          {
+            "rule_id": "R005",
+            "name": "Process Followed By External Network Connection",
+            "description": "Detect a process followed by an external connection using the same host and process ID.",
+            "mitre_techniques": []
+          },
+          {
+            "rule_id": "R009",
+            "name": "DNS Query Followed By Network Connection",
+            "description": "Detect process, DNS, and external network activity sharing host and process ID.",
+            "mitre_techniques": []
+          }
+        ],
+        "related_events": [
+          {
+            "event_id": "INC-S08-V01-E0020",
+            "timestamp": "2026-01-22T08:00:34Z",
+            "source_type": "sysmon",
+            "source_event_id": "1",
+            "event_type": "process_create",
+            "host": "WS-53",
+            "user": "user14",
+            "process_name": "wscript.exe",
+            "parent_process_name": "explorer.exe",
+            "process_id": "46336",
+            "parent_process_id": "59944",
+            "command_line": "wscript.exe <synthetic-script>",
+            "src_ip": null,
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": null,
+            "file_path": null,
+            "details": {
+              "image": "wscript.exe",
+              "parent_image": "explorer.exe"
+            }
+          },
+          {
+            "event_id": "INC-S08-V01-E0024",
+            "timestamp": "2026-01-22T08:00:59Z",
+            "source_type": "dns",
+            "source_event_id": "DNS_QUERY",
+            "event_type": "dns_query",
+            "host": "WS-53",
+            "user": "user14",
+            "process_name": "wscript.exe",
+            "parent_process_name": null,
+            "process_id": "46336",
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "10.21.3.155",
+            "dst_ip": null,
+            "dst_port": null,
+            "dst_domain": "telemetry-17.example.net",
+            "file_path": null,
+            "details": {
+              "query": "telemetry-17.example.net",
+              "response": "198.51.100.105"
+            }
+          },
+          {
+            "event_id": "INC-S08-V01-E0028",
+            "timestamp": "2026-01-22T08:01:24Z",
+            "source_type": "network",
+            "source_event_id": "FLOW",
+            "event_type": "network_connection",
+            "host": "WS-53",
+            "user": "user14",
+            "process_name": "wscript.exe",
+            "parent_process_name": null,
+            "process_id": "46336",
+            "parent_process_id": null,
+            "command_line": null,
+            "src_ip": "10.21.3.155",
+            "dst_ip": "198.51.100.105",
+            "dst_port": 443,
+            "dst_domain": "telemetry-17.example.net",
+            "file_path": null,
+            "details": {
+              "action": "allowed",
+              "protocol": "tcp"
+            }
+          }
+        ]
+      },
+      "retrieval_query": "Behavior process_dns_network_activity: A process performed DNS resolution and then connected to the external destination. Detections: R005 Process Followed By External Network Connection: Detect a process followed by an external connection using the same host and process ID.; R009 DNS Query Followed By Network Connection: Detect process, DNS, and external network activity sharing host and process ID. Telemetry: Sysmon Event ID 1 process_create; dns dns_query; network network_connection. Security concepts: process DNS resolution followed by external network connection command and control.",
+      "supplemental_retrieval_queries": [],
+      "retrieved_knowledge": [
+        {
+          "citation_id": "K1",
+          "rank": 1,
+          "score": 0.753673,
+          "chunk_id": "chk-6cdd968715cb32a7d10ff5d8550e6f78",
+          "document_id": "microsoft-sysmon-events",
+          "source": "microsoft",
+          "source_type": "sysmon_doc",
+          "title": "Sysmon v15.21 — Event ID 3: Network connection",
+          "section": "Event ID 3: Network connection",
+          "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "product": "sysmon",
+            "raw_content_hash": "513042e383e95c1c4638c865473da4a4be573f3892b100b9d9e64ecc58727fe3",
+            "chunk_role": "child",
+            "heading_level": 3,
+            "sysmon_event_id": 3,
+            "sysmon_event_name": "Network connection"
+          }
+        },
+        {
+          "citation_id": "K2",
+          "rank": 2,
+          "score": 0.750136,
+          "chunk_id": "chk-7763327a6fd1b0d834640d4cd7865470",
+          "document_id": "microsoft-sysmon-events",
+          "source": "microsoft",
+          "source_type": "sysmon_doc",
+          "title": "Sysmon v15.21 — Event ID 22: DNSEvent (DNS query)",
+          "section": "Event ID 22: DNSEvent (DNS query)",
+          "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "product": "sysmon",
+            "raw_content_hash": "513042e383e95c1c4638c865473da4a4be573f3892b100b9d9e64ecc58727fe3",
+            "chunk_role": "child",
+            "heading_level": 3,
+            "sysmon_event_id": 22,
+            "sysmon_event_name": "DNSEvent (DNS query)"
+          }
+        },
+        {
+          "citation_id": "K3",
+          "rank": 3,
+          "score": 0.747594,
+          "chunk_id": "chk-43d369b791985cd56e9bdf131a946ba6",
+          "document_id": "microsoft-sysmon-events",
+          "source": "microsoft",
+          "source_type": "sysmon_doc",
+          "title": "Sysmon v15.21 — Event ID 10: ProcessAccess",
+          "section": "Event ID 10: ProcessAccess",
+          "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "product": "sysmon",
+            "raw_content_hash": "513042e383e95c1c4638c865473da4a4be573f3892b100b9d9e64ecc58727fe3",
+            "chunk_role": "child",
+            "heading_level": 3,
+            "sysmon_event_id": 10,
+            "sysmon_event_name": "ProcessAccess"
+          }
+        },
+        {
+          "citation_id": "K4",
+          "rank": 4,
+          "score": 0.738504,
+          "chunk_id": "chk-e5e3134833440346ddc7164ace9d6f7e",
+          "document_id": "microsoft-sysmon-events",
+          "source": "microsoft",
+          "source_type": "sysmon_doc",
+          "title": "Sysmon v15.21 — Introduction",
+          "section": "Introduction",
+          "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "product": "sysmon",
+            "raw_content_hash": "513042e383e95c1c4638c865473da4a4be573f3892b100b9d9e64ecc58727fe3",
+            "chunk_role": "child",
+            "heading_level": 2
+          }
+        },
+        {
+          "citation_id": "K5",
+          "rank": 5,
+          "score": 0.723124,
+          "chunk_id": "chk-982cd7d5cd8234c62bda330e6875ff0a",
+          "document_id": "microsoft-sysmon-events",
+          "source": "microsoft",
+          "source_type": "sysmon_doc",
+          "title": "Sysmon v15.21 — Event filtering entries",
+          "section": "Event filtering entries",
+          "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+          "technique_id": null,
+          "sigma_rule_id": null,
+          "metadata": {
+            "product": "sysmon",
+            "raw_content_hash": "513042e383e95c1c4638c865473da4a4be573f3892b100b9d9e64ecc58727fe3",
+            "chunk_role": "child",
+            "heading_level": 2
+          }
+        }
+      ],
+      "report": {
+        "case_id": "INC-S08-V01",
+        "summary": "On host WS-53, wscript.exe (PID 46336) was executed by user14 under parent process explorer.exe, performed a DNS query for telemetry-17.example.net, and subsequently initiated an external network connection over TCP port 443 to 198.51.100.105.",
+        "summary_evidence_event_ids": [
+          "INC-S08-V01-E0020",
+          "INC-S08-V01-E0024",
+          "INC-S08-V01-E0028"
+        ],
+        "timeline": [
+          {
+            "event_id": "INC-S08-V01-E0020",
+            "timestamp": "2026-01-22T08:00:34Z",
+            "description": "Process wscript.exe (PID 46336) was spawned under parent process explorer.exe (PID 59944) with command line 'wscript.exe <synthetic-script>' on host WS-53 by user14."
+          },
+          {
+            "event_id": "INC-S08-V01-E0024",
+            "timestamp": "2026-01-22T08:00:59Z",
+            "description": "Process wscript.exe (PID 46336) on host WS-53 issued a DNS query for 'telemetry-17.example.net', which resolved to IP address 198.51.100.105."
+          },
+          {
+            "event_id": "INC-S08-V01-E0028",
+            "timestamp": "2026-01-22T08:01:24Z",
+            "description": "Process wscript.exe (PID 46336) established an allowed TCP network connection to 198.51.100.105 on port 443."
+          }
+        ],
+        "findings": [
+          {
+            "title": "Script Host Execution Followed by External Communication",
+            "explanation": "wscript.exe executed a script and subsequently generated external DNS and TCP port 443 network activity to 198.51.100.105 / telemetry-17.example.net.",
+            "claim_type": "fact",
+            "evidence_event_ids": [
+              "INC-S08-V01-E0020",
+              "INC-S08-V01-E0024",
+              "INC-S08-V01-E0028"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-6cdd968715cb32a7d10ff5d8550e6f78",
+              "chk-7763327a6fd1b0d834640d4cd7865470"
+            ],
+            "confidence": "high"
+          },
+          {
+            "title": "Potential Script-Based Command and Control or Exfiltration Channel",
+            "explanation": "Execution of a script via wscript.exe communicating with an external endpoint may indicate automated outbound communication or C2 activity.",
+            "claim_type": "inference",
+            "evidence_event_ids": [
+              "INC-S08-V01-E0020",
+              "INC-S08-V01-E0024",
+              "INC-S08-V01-E0028"
+            ],
+            "knowledge_chunk_ids": [],
+            "confidence": "medium"
+          }
+        ],
+        "why_suspicious": [
+          {
+            "reason": "The Windows Script Host process (wscript.exe) initiated external network communication following DNS resolution of an external domain.",
+            "evidence_event_ids": [
+              "INC-S08-V01-E0020",
+              "INC-S08-V01-E0024",
+              "INC-S08-V01-E0028"
+            ],
+            "knowledge_chunk_ids": [
+              "chk-6cdd968715cb32a7d10ff5d8550e6f78",
+              "chk-7763327a6fd1b0d834640d4cd7865470"
+            ]
+          }
+        ],
+        "mitre_techniques": [],
+        "recommended_actions": [
+          {
+            "action": "Inspect the specific script file executed by wscript.exe on host WS-53.",
+            "reason": "Determining the script contents will clarify whether the external communication was authorized or malicious.",
+            "priority": "high"
+          },
+          {
+            "action": "Investigate destination IP 198.51.100.105 and domain telemetry-17.example.net in threat intelligence and network proxy logs.",
+            "reason": "To evaluate the reputation and historical traffic associated with the external destination.",
+            "priority": "medium"
+          },
+          {
+            "action": "Review host WS-53 for additional suspicious child processes or persistence mechanisms established by user14.",
+            "reason": "To identify any subsequent stages of execution or lateral movement.",
+            "priority": "medium"
+          }
+        ],
+        "limitations": [
+          "The full path and content of '<synthetic-script>' executed by wscript.exe are not present in the telemetry.",
+          "The retrieved knowledge base chunks do not provide explicit MITRE ATT&CK technique mappings for this behavior."
+        ]
+      },
+      "grounding": {
+        "valid": true,
+        "case_id_matches": true,
+        "all_evidence_refs_exist": true,
+        "all_knowledge_refs_exist": true,
+        "timeline_event_ids_belong_to_case": true,
+        "timeline_timestamps_match_evidence": true,
+        "mitre_knowledge_support_valid": true,
+        "unknown_event_ids": [],
+        "unknown_knowledge_chunk_ids": [],
+        "unsupported_mitre_techniques": []
+      },
+      "llm": {
+        "provider": "gemini",
+        "model": "gemini-3.7-flash",
+        "latency_ms": 76567.672,
+        "prompt_tokens": 6052,
+        "completion_tokens": 1411
+      },
+      "evaluation": {
+        "case_id": "INC-S08-V01",
+        "schema_valid": true,
+        "evidence_refs_valid": true,
+        "knowledge_refs_valid": true,
+        "key_events_cited": true,
+        "timeline_refs_valid": true,
+        "timestamps_valid": true,
+        "hallucinated_event_ids": [],
+        "expected_mitre_covered": true,
+        "recommended_actions_present": true,
+        "overall_pass": true,
+        "missing_key_event_ids": [],
+        "missing_mitre_techniques": []
+      }
+    }
+  ]
+}

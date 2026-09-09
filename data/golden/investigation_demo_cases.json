@@ -1,0 +1,43 @@
+[
+  {
+    "case_id": "INC-S02-V01",
+    "behavior_id": "BH-INC-S02-V01-authentication_anomaly-f449daeb6aa7",
+    "expected_behavior_type": "authentication_anomaly",
+    "expected_key_event_ids": [
+      "INC-S02-V01-E0028",
+      "INC-S02-V01-E0033",
+      "INC-S02-V01-E0035",
+      "INC-S02-V01-E0044",
+      "INC-S02-V01-E0046",
+      "INC-S02-V01-E0055"
+    ],
+    "expected_rule_ids": ["R001", "R002"],
+    "expected_mitre_techniques": ["T1110.001"],
+    "expected_theme": "Repeated failed logons followed by a successful authentication for one identity tuple."
+  },
+  {
+    "case_id": "INC-S04-V01",
+    "behavior_id": "BH-INC-S04-V01-office_script_interpreter-6e2c6df3aa2a",
+    "expected_behavior_type": "office_script_interpreter",
+    "expected_key_event_ids": [
+      "INC-S04-V01-E0039",
+      "INC-S04-V01-E0044"
+    ],
+    "expected_rule_ids": ["R003", "R004", "R010"],
+    "expected_mitre_techniques": ["T1059.001"],
+    "expected_theme": "An Office process creates PowerShell with a correlated parent-child relation."
+  },
+  {
+    "case_id": "INC-S08-V01",
+    "behavior_id": "BH-INC-S08-V01-process_dns_network_activity-6150c21e5617",
+    "expected_behavior_type": "process_dns_network_activity",
+    "expected_key_event_ids": [
+      "INC-S08-V01-E0020",
+      "INC-S08-V01-E0024",
+      "INC-S08-V01-E0028"
+    ],
+    "expected_rule_ids": ["R005", "R009"],
+    "expected_mitre_techniques": [],
+    "expected_theme": "A process resolves a domain and connects to the corresponding external destination."
+  }
+]

@@ -40,6 +40,13 @@ class Settings(BaseSettings):
     embedding_batch_size: int = 32
     llm_provider: str = "mock"
     llm_model: str = "mock-investigator-v1"
+    llm_api_key: SecretStr | None = None
+    gemini_api_key: SecretStr | None = None
+    gemini_thinking_level: str | None = None
+    llm_base_url: str | None = None
+    llm_timeout_seconds: float = Field(default=60.0, gt=0)
+    llm_max_output_tokens: int = Field(default=3000, ge=256)
+    investigation_retrieval_top_k: int = Field(default=5, ge=1, le=20)
     judge_model: str = "mock-judge-v1"
     random_seed: int = 42
     project_root: Path = Field(default_factory=lambda: Path.cwd())
@@ -68,6 +75,15 @@ class Settings(BaseSettings):
         """Return the project-local cache for downloaded embedding model files."""
 
         return self.project_root.resolve() / "data" / "models" / "fastembed"
+
+    @property
+    def resolved_llm_api_key(self) -> SecretStr | None:
+        """Prefer Gemini's conventional variable for Gemini, with generic fallback."""
+
+        if self.llm_provider.casefold() == "gemini" and self.gemini_api_key is not None:
+            if self.gemini_api_key.get_secret_value().strip():
+                return self.gemini_api_key
+        return self.llm_api_key
 
 
 @lru_cache
